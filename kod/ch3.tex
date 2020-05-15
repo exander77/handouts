@@ -1,0 +1,312 @@
+\chapter{Statistical methods I}
+
+\section{Entrophy of source units}
+
+Entrophy is the amount of information contained in a unit measurred in bits. The more unexpeted the unit is, the higher is the amount of information it carries.
+
+There are several basic terms:
+
+\noindent
+Source units:
+$$S = \{x_1, x_2, \ldots, x_n\}.$$
+Source unit probabilities:
+$$P = \{p_1, p_2, \ldots, p_n\}.$$
+Source unit frequencies\sidenote{Frequencies are usually associated with actual messages and their analysis.}:
+$$F = \{f_1, f_2, \ldots, f_n\}.$$
+Entropy (information content) of unit $x_i$\sidenote{How much bits of actual information unit represents.}:
+$$ H_i = - \log_2 p_i.$$
+Average entrophy of a source unit from S\sidenote{How much bits of actual information represents a unit on average.}:
+$$H_{avg}(S) = \sum_{i=1}^{n}{p_i H_i} = -\sum_{i=1}^{n}{p_i \log_2 p_i}.$$
+
+%\section{Entrophy of a message}
+
+%Message
+%$$ X = x_1, x_2, \ldots, x_n,$$
+
+
+%Entrophy of source message
+%Entrophy of encdoded message
+%Length of encoded message
+%$$L(X) = $$
+
+\section{Entrophy of a code}
+To each source unit, a codeword can be assigned. 
+
+\noindent
+Codewords (code units):
+$$C = \{c_1, c_2, \ldots, c_n\}.$$
+Average length of a codeword\sidenote{How many actual bits are used for encoding a source unit into a codeword on average.}:
+$$L_{avg}(C) = \sum_{i=1}^{n}{p_i |c_i|}.$$
+
+\section{Propertis of codes}
+
+Given the following source units, their probabilities and codewors, the average entrophy and the average length of the codeword can be calculated:
+
+\noindent
+Source units:
+$$S = \{\texttt{a}, \texttt{b}, \texttt{c}, \texttt{d}, \texttt{e}\}.$$
+Source unit probabilities:
+$$P = \{0.1, 0.15, 0.3, 0.16, 0.29\}.$$
+Codewords:
+$$C = \{010, 011, 11, 00, 10\}.$$
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{|r|cccccc|}
+      \hline
+      $x_i$ & $p_i$ & $c_i$ & $|c_i|$ & $H_i$ & $H_{avg}(S)$ & $L_{avg}(C)$      \\
+          &        &        &          & $-\log_2 p_i$ & $p_i H_i$ & $p_i |c_i|$      \\
+      %      & unit & probability & code & code length & unit entrophy & average entrophy & average code length      \\
+      \hline
+      a          & 0.10   & 010    & 3        & 3.32  & 0.332        & 0.30              \\  
+      b          & 0.15   & 011    & 3        & 2.74  & 0.411        & 0.45              \\
+      c          & 0.30   & 11     & 2        & 1.74  & 0.521        & 0.60              \\
+      d          & 0.16   & 00     & 2        & 2.65  & 0.423        & 0.32              \\
+      e          & 0.29   & 10     & 2        & 1.79  & 0.518        & 0.58              \\
+      \hline
+      $\sum$     & 1.00   & -      & -        & -     & 2.205        & 2.25              \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Code $C$ for source units $S$ with probabilities $P$}
+\end{table}
+
+The closer is the average length of the codeword to the actual entrophy, the better is code performing.
+
+%Prefix code - no code word is a prefix of the other code word.
+%Uniqualy decodable (biunique) - no coded string has more than one decoding.
+%Kraft's inequality - necessary and sufficient condition for the existence of a prefix code.
+
+
+\begin{dt}{Prefix code.}
+  A prefix code is a code where no codeword is a prefix of a different codeword.
+\end{dt}
+
+\begin{dt}{Biunique (uniquely decodable) code.}
+  A biunique code is a code where no encoded message has more than one decoding.
+\end{dt}
+
+Code $C = \{010, 011, 11, 00, 10\}$ above is uniquely decodable prefix code as no codeword is a prefix of another codeword. Uniquely decodable code which is not a prefix code can be easily created by doing a reverse of each codeword of code $C$. $C^R = \{010, 110, 11, 00, 01\}$ is not a prefix code\sidenote{Code $C^R$ is actually a suffix code.} because $11$ is a prefix of $110$ and $01$ is a prefix of $010$.
+
+Code $C_N = \{010, 011, 11, 00, 01\}$ is not uniquely decodable code as sequence $010011$ can be interpreted in several way as $010.011$ or $01.00.11$.
+
+All prefix codes are uniquely decodable codes. Some uniquely decodable codes are prefix codes.\sidenote{In practice, mostly prefix codes are used.}
+
+\section{Sample source units and their probabilities and frequencies}
+
+These source units and their frequencies will be used in the following examples:
+
+\noindent
+Source units:
+$$S_1 = \{\texttt{a}, \texttt{b}, \texttt{c}, \texttt{d}, \texttt{e}, \texttt{f}, \texttt{g}, \texttt{h}, \texttt{i}\}.$$
+Source unit probabilities:
+$$P_1 = \{1/35, 1/35, 2/35, 3/35, 3/35, 5/35, 5/35, 7/35, 8/35\}.$$
+Source unit frequencies:
+$$F_1 = \{1, 1, 2, 3, 3, 5, 5, 7, 8\}.$$
+
+\forestset{angled/.style={content/.expanded={\noexpand\textless\forestov{content}\noexpand\textgreater}}}
+\tikzset{el style/.style={midway, font=\scriptsize, inner sep=+1pt, auto=right}}
+\tikzset{every node/.style={draw, circle}}
+\tikzset{every edge/.style={align=center, base=top}}
+
+\section{Shannon-Fano Coding}
+Shannon-Fano Coding creates codewords by sorting units by their number of frequencies (probabilities). In each step the number of frequencies is split to two closest parts and new nodes are created. The nodes are created from the root which contains the sum of all frequencies.
+
+\begin{figure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=6pt},
+  where n children={1}{tier=word}{},
+  where n children={0}{rectangle,draw=none,minimum size=0.7cm}{
+    if={n==1}{% n == 1 means first child
+      edge label={node[el style, draw=none, swap, swap, near start]{0}}
+    }{
+      edge label={node[el style, swap, draw=none, near start]{1}}
+    }
+  }
+%
+[35 [ 15 [ 7 [ 4 [ 2 [ 1 [ a ] ]
+                     [ 1 [ b ] ] ]
+                 [ 2 [ c ] ] ]
+             [ 3 [ d ] ] ]
+         [ 8 [ 3 [ e ] ] 
+             [ 5 [ f ] ] ] ]
+    [ 20 [12 [ 5 [ g ] ]
+             [ 7 [ h ] ] ]
+          [8 [ i ] ] ] ]
+\end{forest}
+\caption{Shannon-Fano tree for code $C_1$ for source units $S$ with probabilities $P$}
+\end{figure}
+
+Edges to the left and to the right child nodes are labeled 0 and 1 respectively. The codewords can be red from root node to each leaf node.
+
+From the tree above, the codewords are:
+$$C_1 = \{\texttt{00000}, \texttt{00001}, \texttt{0001}, \texttt{001}, \texttt{010}, \texttt{011}, \texttt{100}, \texttt{101}, \texttt{11}\}.$$
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{|r|cccccc|}
+      \hline
+      $x_i$ & $p_i$ & $c_i$ & $|c_i|$ & $H_i$ & $H_{avg}(S)$ & $L_{avg}(C)$      \\
+          &        &        &          & $-\log_2 p_i$ & $p_i H_i$ & $p_i |c_i|$      \\
+      \hline
+      a          & 0.029   & 00000    & 5        & 5.13  & 0.147        & 0.143              \\  
+      b          & 0.029   & 00001    & 5        & 5.13  & 0.147        & 0.143              \\
+      c          & 0.057   & 0001     & 4        & 4.13  & 0.236        & 0.229              \\
+      d          & 0.086   & 001      & 3        & 3.54  & 0.304        & 0.257              \\
+      e          & 0.086   & 010      & 3        & 3.54  & 0.304        & 0.257              \\
+      f          & 0.143   & 011      & 3        & 2.81  & 0.401        & 0.429              \\  
+      g          & 0.143   & 100      & 3        & 2.81  & 0.401        & 0.429              \\
+      h          & 0.200   & 101      & 3        & 2.32  & 0.464        & 0.600              \\
+      i          & 0.229   & 11       & 2        & 2.19  & 0.487        & 0.457              \\
+      \hline
+      $\sum$     & 1.00    & -        & -        & -     & 2.891        & 2.944              \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Code $C_1$ for source units $S_1$ with probabilities $P_1$}
+\end{table}
+  
+Sometimes parts can be created differently, leading to different codewords. In our case, in the first step the number of frequencies can be split either to $1, 1, 2, 3, 3, 5$ and $5, 7, 8$ or  $1, 1, 2, 3, 3, 5, 5$ and $7, 8$ leading to $15 + 20$ or $20 + 15$. It has to be decided beforehand how to resolve this situation (either going with lower on left or lower on right).
+
+\begin{figure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=6pt},
+  where n children={1}{tier=word}{},
+  where n children={0}{rectangle,draw=none,minimum size=0.7cm}{
+    if={n==1}{% n == 1 means first child
+      edge label={node[el style, draw=none, swap, swap, near start]{0}}
+    }{
+      edge label={node[el style, swap, draw=none, near start]{1}}
+    }
+  }
+%
+[35 [ 20 [ 10 [ 4 [ 2 [ 1 [ a ] ]
+                      [ 1 [ b ] ] ]
+                  [ 2 [ c ] ] ]
+              [ 6 [ 3 [ d ] ]
+                  [ 3 [ e ] ] ] ]
+         [ 10 [5 [ f ] ]
+              [5 [ g ] ] ] ]
+    [ 15 [ 7 [ h ] ]
+         [ 8 [ i ] ] ] ]
+\end{forest}
+\caption{Huffman tree for code $C_2$ for source units $S$ with probabilities $P$}
+\end{figure}
+
+From the tree above, the codewords are:
+$$C_2 = \{\texttt{00000}, \texttt{00001}, \texttt{0001}, \texttt{0010}, \texttt{0011}, \texttt{010}, \texttt{111}, \texttt{10}, \texttt{11}\}.$$
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{|r|cccccc|}
+      \hline
+      $x_i$ & $p_i$ & $c_i$ & $|c_i|$ & $H_i$ & $H_{avg}(S)$ & $L_{avg}(C)$      \\
+          &        &        &          & $-\log_2 p_i$ & $p_i H_i$ & $p_i |c_i|$      \\
+      \hline
+      a          & 0.029   & 00000    & 5        & 5.13  & 0.147        & 0.143              \\  
+      b          & 0.029   & 00001    & 5        & 5.13  & 0.147        & 0.143              \\
+      c          & 0.057   & 0001     & 4        & 4.13  & 0.236        & 0.229              \\
+      d          & 0.086   & 0010     & 4        & 3.54  & 0.304        & 0.343              \\
+      e          & 0.086   & 0011     & 4        & 3.54  & 0.304        & 0.343              \\
+      f          & 0.143   & 010      & 3        & 2.81  & 0.401        & 0.429              \\  
+      g          & 0.143   & 111      & 3        & 2.81  & 0.401        & 0.429              \\
+      h          & 0.200   & 10       & 2        & 2.32  & 0.464        & 0.400              \\
+      i          & 0.229   & 11       & 2        & 2.19  & 0.487        & 0.457              \\
+      \hline
+      $\sum$     & 1.00    & -        & -        & -     & 2.891        & 2.916              \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Code $C_2$ for source units $S_1$ with probabilities $P_1$}
+\end{table}
+
+\section{Huffman Coding}
+Huffman Coding creates codewords by creating new node from the two smallest nodes (sorting is usually involved). In each step the two lowest numbers of frequencies are summed together and a new node is created containing this sum as a parent of these two nodes. The nodes are created from the leaves which are created from the frequencies of the source units.
+
+\begin{figure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=6pt},
+  where n children={1}{tier=terminus}{},
+  where n children={0}{rectangle,draw=none,minimum size=0.7cm}{
+  }
+%i
+[35 [ 20,edge label={node[el style, draw=none]{1}},name=N16 [9,edge label={node[el style, draw=none]{0}},name=N9 [ 4,edge label={node[el style, draw=none]{0}} [ 2,edge label={node[el style, draw=none]{0}} [ 1,edge label={node[el style, draw=none]{0}} [ a ] ]
+                   [ 1,edge label={node[el style, draw=none, swap]{1}} [ b ] ] ]
+                 [ 2,edge label={node[el style, draw=none, swap]{1}} [ c ] ] ]
+                 [\phantom{0},draw=none,no edge] ] 
+    [11,edge label={node[el style, draw=none, swap]{1}} [ 6,edge label={node[el style, draw=none, near start]{1}} [ 3,edge label={node[el style, draw=none]{0}} [ d ] ]
+                 [ 3,edge label={node[el style, draw=none, swap, near end]{1}} [ e ] ] ]
+             [ 5,name=N5,no edge [ f ] ]
+             [ 5,edge label={node[el style, draw=none, swap, near start]{0}} [ g ] ] ] ]
+    [ 15,edge label={node[el style, draw=none, swap]{0}} 
+         [ 7,edge label={node[el style, draw=none]{0}} [ h ] ]
+         [ 8,edge label={node[el style, draw=none, swap]{1}} [ i ] ] ] ]
+  \draw (N9.south east) -- (N5.north) node[el style, swap, draw=none, near start]{1}; % or use (NP.north) 
+\end{forest}
+\caption{Huffman tree for code $C_3$ for source units $S$ with probabilities $P$}
+\end{figure}
+
+Edges to the lower and higher value child nodes are labeled 0 and 1 respectively. If a tie occures left and right child nodes are labeled 0 and 1 respectively.
+
+From the tree above, the codewords are:
+$$C_3 = \{\texttt{10000}, \texttt{10001}, \texttt{1001}, \texttt{1110}, \texttt{1111}, \texttt{101}, \texttt{110}, \texttt{00}, \texttt{01}\}.$$
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{|r|cccccc|}
+      \hline
+      $x_i$ & $p_i$ & $c_i$ & $|c_i|$ & $H_i$ & $H_{avg}(S)$ & $L_{avg}(C)$      \\
+          &        &        &          & $-\log_2 p_i$ & $p_i H_i$ & $p_i |c_i|$      \\
+      \hline
+      a          & 0.029   & 10000    & 5        & 5.13  & 0.147        & 0.143              \\  
+      b          & 0.029   & 10001    & 5        & 5.13  & 0.147        & 0.143              \\
+      c          & 0.057   & 1001     & 4        & 4.13  & 0.236        & 0.229              \\
+      d          & 0.086   & 1110     & 4        & 3.54  & 0.304        & 0.343              \\
+      e          & 0.086   & 1111     & 4        & 3.54  & 0.304        & 0.343              \\
+      f          & 0.143   & 101      & 3        & 2.81  & 0.401        & 0.429              \\  
+      g          & 0.143   & 110      & 3        & 2.81  & 0.401        & 0.429              \\
+      h          & 0.200   & 00       & 2        & 2.32  & 0.464        & 0.400              \\
+      i          & 0.229   & 01       & 2        & 2.19  & 0.487        & 0.457              \\
+      \hline
+      $\sum$     & 1.00    & -        & -        & -     & 2.891        & 2.916              \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Code $C_3$ for source units $S_1$ with probabilities $P_1$}
+\end{table}
+
+\begin{dt}{Kraft-McMillan's Inequality.}
+    The Kraft-McMillan's Inequality defined as\sidenote{The Kraft-McMillan's Inequality is derived from the Huffman tree, each leaf represents a codeword and the depth of the leaf correspond to the length of that codeword.}: $$\sum_{\ell \in \mathrm{leaves}} 2^{-\mathrm{depth}(\ell)} \leq 1.$$
+    It is necessary and sufficient condition for the existence of a prefix code with given properties. If properties of the code given follows Kraft-McMillan's Inequality, it can be uniquely decodable code. If properties of the code given does not follow Kraft-McMillan's Inequality, it cannot be uniquely decodable code.
+\end{dt}
+
+Code $C_N = \{010, 011, 11, 00, 01\}$ above gives you $1/8 + 1/8 + 1/4 + 1/4 + 1/4 = 1$ which means that code with such length of codeword could be uniquely decodable code, but it is not.
+Code $C_{N2} = \{00, 01, 10, 11, 000\}$ gives you $1/4 + 1/4 + 1/4 + 1/4 = 1.125$ hence it cannot be uniquely decodable code.
+
+\begin{dt}{Redundant code.}
+  A prefix code for which holds $$\sum_{\ell \in \mathrm{leaves}} 2^{-\mathrm{depth}(\ell)} < 1.$$
+\end{dt}
+
+Code $C_{R} = \{00, 01, 10, 110\}$ gives you $1/4 + 1/4 + 1/4 + 1/8 = 9.875$ hence the code is redundant (as it is also uniquely decodable).
+
+\begin{dt}{Complete code.}
+  A prefix code for which holds $$\sum_{\ell \in \mathrm{leaves}} 2^{-\mathrm{depth}(\ell)} = 1.$$
+\end{dt}
+
+Code $C = \{010, 011, 11, 00, 10\}$ above gives you $1/8 + 1/8 + 1/4 + 1/4 + 1/4 = 1$ hence the code is complete (as it is also uniquely decodable).
+
+\begin{dt}{Optimal code.}
+    A code is optimal (for a given probability distribution) if no other code with a lower average length of a codeword $L_{avg}$ exists.
+\end{dt}
+
+You can compare average length of codewords in examples above for Shannon-Fano Codes $C_1$ and $C_2$ and Huffman Code $C_3$. Huffman Coding always produces optimal code ($C_3$). Shanno-Fano Coding is not guaranteed to produce optimal code ($C_1$), but can produce optimal code ($C_2$). 
+
+Optimal code is always complete code.
+
+\section{Homework}
+
+\begin{itemize}
+  \item Try to create Shannon-Fano Coding and Huffman Coding for different sets of frequencies.
+  \item Try to calculate Kraft-McMillan's Inequality for the created sets of codewords (included those presented here).
+  \item Compare average codeword length of the created sets of coders and see that Shannon-Fano does not always produce an optimal code.
+\end{itemize}

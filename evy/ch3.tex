@@ -1,0 +1,194 @@
+\chapter{Exact string matching}
+
+\section{Naive search}
+\begin{itemize}
+\item Time complexity: $O(mn)$.
+\item Space complexity: $O(1)$.
+\end{itemize}
+
+\begin{verbatim}
+T = abcabaabaabaacababaabaaba
+P = abaabaa
+
+abcabaabaabaacababaabaabaa
+aba
+ a
+  a
+   abaabaa                         match on position 3
+    a
+     ab
+      abaabaa                      match on position 6
+       a
+        ab
+         abaab
+          a
+           ab
+            ab
+             a
+              abaa
+               a
+                abaabaa            match on position 16
+                 a
+                  ab
+                   abaabaa         match on position 19
+                    a
+                     ab
+                      abaab
+                       a
+                        ab
+\end{verbatim}
+
+\begin{verbatim}
+T = aaaaaaaaaaa
+P = aaaaa
+
+aaaaaaaaaa
+aaaaa            match on position 0
+ aaaaa           match on position 1
+  aaaaa          match on position 2
+   aaaaa         match on position 3
+    aaaaa        match on position 4
+     aaaaa       match on position 5
+      aaaa
+       aaa
+        aa
+         a
+\end{verbatim}
+
+%\subsection{Algorithm implementation}
+%\cpplistings{tut3/naive}{Naive Search Algorithm.}{{14-36}}
+
+\section{Karp--Robin}
+
+\section{Morris--Pratt}
+
+\begin{itemize}
+\item Time complexity: $O(n)$.
+\item Space complexity: $O(1)$.
+\end{itemize}
+
+\begin{verbatim}
+T = abcabaabaabaacababaabaabaa
+P = abaabaa
+
+Preprocessing:
+
+Index:    0  1  2  3  4  5  6
+String:   a  b  a  a  b  a  a 
+Border:   0  0  1  1  2  3  4 
+MP:       0  1  1  2  2  3  4  5 
+
+Processing:
+abcabaabaabaacababaabaabaa
+aba
+  a
+   abaabaa                   match on position 3
+      ????baa                match on position 6
+         ????b
+            ?b
+             a
+              abaa
+                ?baabaa      match on position 16
+                   ????baa   match on position 19
+\end{verbatim}
+
+%\subsection{Algorithm implementation}
+%\cpplistings{tut3/mp}{Morris-Pratt Algorithm.}
+
+\section{Knuth--Morris--Pratt}
+
+\begin{itemize}
+\item Time complexity: $O(n)$.
+\item Space complexity: $O(1)$.
+\end{itemize}
+
+\begin{verbatim}
+T = abcabaabaabaacababaabaabaa
+P = abaabaa
+
+Preprocessing:
+
+Index:    0  1  2  3  4  5  6
+String:   a  b  a  a  b  a  a
+Border:   0  0  1  1  2  3  4
+KMP:      0  1  0  2  1  0  2  5
+
+Processing:
+abcabaabaabaacababaabaabaa
+aba
+   abaabaa                   match on position 3
+      ????baa                match on position 6
+         ????b
+             a
+              abaa
+                ?baabaa      match on position 16
+                   ????baa   match on position 19
+\end{verbatim}
+
+%\subsection{Algorithm implementation}
+%\cpplistings{tut3/kmp}{Knuth--Morris-Pratt Algorithm.}
+
+\section{Boyer--Moore--Horsepool}
+\begin{itemize}
+\item Time complexity: $O(n)$.
+\item Space complexity: $O(1+|\Sigma|)$.
+\end{itemize}
+
+\begin{verbatim}
+T = abcabaabaabaacababaabaabaa
+P = abaabaa
+
+Preprocessing:
+
+Index:    97  98 ???
+BCS:       1   2   7 
+
+Processing:
+abcabaabaabaacababaabaabaa
+..aabaa
+ ......a
+   abaabaa                   match on position 3
+    ......a
+      abaabaa                match on position 6
+       ......a
+              ......a
+                abaabaa      match on position 16
+                 ......a
+                   abaabaa   match on position 19
+\end{verbatim}
+
+\begin{verbatim}
+T = abcabdaacbabcaaba 
+P = bcaab
+
+Preprocessing:
+
+Index:    97  98  99 ???
+BCS:       1   4   3   5 
+
+Processing:
+abcabdaacbabcaaba
+..aab
+    ....b
+       ..aab
+           bcaab    match on position 11
+\end{verbatim}
+
+\section{Boyer--Moore--Horsepool--Sunday}
+
+\begin{verbatim}
+T = abcabdaacbabcaaba 
+P = bcaab
+
+Preprocessing:
+
+Index:    97  98  99 ???
+BCS:       2   1   4   6 
+
+Processing:
+abcabdaacbabcaaba
+..aab
+      ....b
+       ..aab
+           bcaab    match on position 11
+\end{verbatim}

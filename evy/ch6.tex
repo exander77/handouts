@@ -1,0 +1,190 @@
+\chapter{Approximate string matching}
+
+\section{Edit (Levensthein) distance}
+
+\begin{equation*}
+  \qquad\operatorname{d}_{t,p}(i,j) =
+  \begin{cases}
+    \max(i,j) & \text{ if } \min(i,j)=0, \\
+    \min
+      \begin{cases}
+        \operatorname{d}_{t,p}(i-1,j) + 1 \\
+        \operatorname{d}_{t,p}(i,j-1) + 1 \\
+        \operatorname{d}_{t,p}(i-1,j-1) + 1_{(t_i \neq p_j)}
+      \end{cases} & \text{ otherwise.}
+  \end{cases}
+\end{equation*}
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{c|ccccccc}
+                  &\texttt{-}		&\texttt{a}		&\texttt{g}		&\texttt{t}		&\texttt{c}		&\texttt{a}		&\texttt{g}\\
+      \hline
+      \texttt{-}	&\tm{l10}0\tm{r10}  &\tm{l11}1\tm{r11}	&\tm{l12}2\tm{r12}  &\tm{l13}3\tm{r13}  &\tm{l14}4\tm{r14}	&\tm{l15}5\tm{r15}	&\tm{l16}6\tm{r16}\\[2px]
+      \texttt{g}	&\tm{l20}1\tm{r20}	&\tm{l21}1\tm{r21}	&\tm{l22}1\tm{r22}	&\tm{l23}2\tm{r23}	&\tm{l24}3\tm{r24}	&\tm{l25}4\tm{r25}	&\tm{l26}5\tm{r26}\\[2px]
+      \texttt{a}	&\tm{l30}2\tm{r30}	&\tm{l31}1\tm{r31}	&\tm{l32}2\tm{r32}	&\tm{l33}2\tm{r33}	&\tm{l34}3\tm{r34}	&\tm{l35}3\tm{r35}	&\tm{l36}4\tm{r36}\\[2px]
+      \texttt{t}	&\tm{l40}3\tm{r40}	&\tm{l41}2\tm{r41}	&\tm{l42}2\tm{r42}	&\tm{l43}2\tm{r43}	&\tm{l44}3\tm{r44}	&\tm{l45}4\tm{r45}	&\tm{l46}4\tm{r46}\\[2px]
+      \texttt{c}	&\tm{l50}4\tm{r50}	&\tm{l51}3\tm{r51}	&\tm{l52}3\tm{r52}	&\tm{l53}3\tm{r53}	&\tm{l54}2\tm{r54}	&\tm{l55}3\tm{r55}	&\tm{l56}4\tm{r56}\\[2px]
+      \texttt{a}	&\tm{l60}5\tm{r60}  &\tm{l61}4\tm{r61}	&\tm{l62}4\tm{r62}	&\tm{l63}4\tm{r63}	&\tm{l64}3\tm{r64}	&\tm{l65}2\tm{r65}	&\tm{l66}3\tm{r66}\\[2px]
+    \end{tabular}
+%    \begin{tikzpicture}
+%      [
+%        remember picture, 
+%        overlay, 
+%        -latex,
+%        shorten >=2pt,
+%        shorten <=2pt
+%      ]
+%      \draw[green] ([yshift=0.5ex]{pic cs:l11}) -- ([yshift=0.5ex]{pic cs:r10});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l12}) -- ([yshift=0.5ex]{pic cs:r11});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l13}) -- ([yshift=0.5ex]{pic cs:r12});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l14}) -- ([yshift=0.5ex]{pic cs:r13});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l15}) -- ([yshift=0.5ex]{pic cs:r14});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l16}) -- ([yshift=0.5ex]{pic cs:r15});
+%      
+%      \draw[green] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r20}) -- ([xshift=-0.5ex]{pic cs:r10});
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r30}) -- ([xshift=-0.5ex]{pic cs:r20});
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r40}) -- ([xshift=-0.5ex]{pic cs:r30});
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r50}) -- ([xshift=-0.5ex]{pic cs:r40});
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r60}) -- ([xshift=-0.5ex]{pic cs:r50});
+%
+%      \draw[green] ([yshift=1.0ex]{pic cs:l21}) -- ([yshift=0.0ex]{pic cs:r10});
+%      \draw[green] ([yshift=1.0ex]{pic cs:l22}) -- ([yshift=0.0ex]{pic cs:r11});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l23}) -- ([yshift=0.5ex]{pic cs:r22});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l24}) -- ([yshift=0.5ex]{pic cs:r23});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l25}) -- ([yshift=0.5ex]{pic cs:r24});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l26}) -- ([yshift=0.0ex]{pic cs:r15});
+%
+%      \draw[green] ([yshift=1.0ex]{pic cs:l31}) -- ([yshift=0.0ex]{pic cs:r20});
+%      \draw[green] ([yshift=1.0ex]{pic cs:l32}) -- ([yshift=0.0ex]{pic cs:r21});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l33}) -- ([yshift=0.0ex]{pic cs:r22});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l34}) -- ([yshift=0.0ex]{pic cs:r23});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l35}) -- ([yshift=0.0ex]{pic cs:r24});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l36}) -- ([yshift=0.5ex]{pic cs:r35});
+%
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r41}) -- ([xshift=-0.5ex]{pic cs:r31});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l42}) -- ([yshift=0.0ex]{pic cs:r31});
+%      \draw[green] ([yshift=1.0ex]{pic cs:l43}) -- ([yshift=0.0ex]{pic cs:r32});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l44}) -- ([yshift=0.0ex]{pic cs:r33});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l45}) -- ([yshift=0.0ex]{pic cs:r34});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l46}) -- ([yshift=0.0ex]{pic cs:r35});
+%
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r51}) -- ([xshift=-0.5ex]{pic cs:r41});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l52}) -- ([yshift=0.0ex]{pic cs:r41});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l53}) -- ([yshift=0.0ex]{pic cs:r42});
+%      \draw[green] ([yshift=1.0ex]{pic cs:l54}) -- ([yshift=0.0ex]{pic cs:r43});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l55}) -- ([yshift=0.5ex]{pic cs:r54});
+%      \draw[blue] ([yshift=0.5ex]{pic cs:l56}) -- ([yshift=0.5ex]{pic cs:r55});
+%      
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l61}) -- ([yshift=0.0ex]{pic cs:r50});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l62}) -- ([yshift=0.0ex]{pic cs:r51});
+%      \draw[blue] ([yshift=1.0ex]{pic cs:l63}) -- ([yshift=0.0ex]{pic cs:r52});
+%      \draw[blue] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r64}) -- ([xshift=-0.5ex]{pic cs:r54});
+%      \draw[green] ([yshift=1.0ex]{pic cs:l65}) -- ([yshift=0.0ex]{pic cs:r54});
+%      \draw[green] ([yshift=0.5ex]{pic cs:l66}) -- ([yshift=0.5ex]{pic cs:r65});
+%      
+%      \draw[green] ([yshift=1.0ex,xshift=-0.5ex]{pic cs:r32}) -- ([xshift=-0.5ex]{pic cs:r22});
+%      \draw[green] ([yshift=0.5ex]{pic cs:l32}) -- ([yshift=0.5ex]{pic cs:r31});
+%    \end{tikzpicture}
+  \end{center}
+  \caption{Edit distance between $t=\texttt{agtcag}$ a $p=\texttt{gatca}$.}
+\end{table}
+
+\clearpage
+\section{Weighted edit distance}
+
+\begin{equation*}
+  \qquad\operatorname{d}_{t,p}(i,j) =
+  \begin{cases}
+    0 & \text{ if } i=0 \land j = 0,\\
+    {d}_{t,p}(i-1,0) + D(t_i) & \text{ if } j=0 \land i > 0, \\
+    {d}_{t,p}(0,j-1) + I(p_j) & \text{ if } i=0 \land j > 0, \\
+    \min
+      \begin{cases}
+        \operatorname{d}_{t,p}(i-1,j) + D(t_i) \\
+        \operatorname{d}_{t,p}(i,j-1) + I(p_j) \\
+        \operatorname{d}_{t,p}(i-1,j-1) + R(p_j,t_i)_{(t_i \neq p_j)}
+      \end{cases} & \text{ otherwise.}
+  \end{cases}
+\end{equation*}
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{cc}
+      \begin{tabular}[t]{c|cccc}
+        R   &\texttt{a} &\texttt{g} &\texttt{c} &\texttt{t}\\\hline
+        \texttt{a}  &-   &2   &3   &4\\
+        \texttt{g}  &2   &-   &6   &2\\
+        \texttt{c}  &2   &5   &-   &1\\
+        \texttt{t}  &5   &2   &1   &-\\\hline
+        I   &5 &2 &4 &3\\
+        D   &2 &5 &3 &4\\
+      \end{tabular}
+      \quad
+      \begin{tabular}[t]{c|ccccccc}
+        DP          &\texttt{-}		&\texttt{a}		&\texttt{g}		&\texttt{t}		&\texttt{c}		&\texttt{a}		&\texttt{g}\\
+        \hline
+        \texttt{-}	&\tm{l10} 0\tm{r10}  &\tm{l11} 2\tm{r11}	&\tm{l12} 7\tm{r12} &\tm{l13}11\tm{r13} &\tm{l14}14\tm{r14}	&\tm{l15}16\tm{r15}	&\tm{l16}21\tm{r16}\\[2px]
+        \texttt{g}	&\tm{l20} 2\tm{r20}	 &\tm{l21} 2\tm{r21}	&\tm{l22} 2\tm{r22}	&\tm{l23} 6\tm{r23}	&\tm{l24} 9\tm{r24}	&\tm{l25}11\tm{r25}	&\tm{l26}16\tm{r26}\\[2px]
+        \texttt{a}	&\tm{l30} 7\tm{r30}	 &\tm{l31} 2\tm{r31}	&\tm{l32} 4\tm{r32}	&\tm{l33} 6\tm{r33}	&\tm{l34} 9\tm{r34}	&\tm{l35} 9\tm{r35}	&\tm{l36}13\tm{r36}\\[2px]
+        \texttt{t}	&\tm{l40}10\tm{r40}	 &\tm{l41} 5\tm{r41}	&\tm{l42} 4\tm{r42}	&\tm{l43} 4\tm{r43}	&\tm{l44} 7\tm{r44}	&\tm{l45} 9\tm{r45}	&\tm{l46}11\tm{r46}\\[2px]
+        \texttt{c}	&\tm{l50}14\tm{r50}	 &\tm{l51}9\tm{r51}	&\tm{l52} 8\tm{r52}	&\tm{l53} 5\tm{r53}	&\tm{l54} 4\tm{r54}	&\tm{l55} 6\tm{r55}	&\tm{l56}11\tm{r56}\\[2px]
+        \texttt{a}	&\tm{l60}19\tm{r60}  &\tm{l61}14\tm{r61}	&\tm{l62}11\tm{r62}	&\tm{l63} 10\tm{r63}	&\tm{l64} 8\tm{r64}	&\tm{l65} 4\tm{r65}	&\tm{l66}8\tm{r66}\\[2px]
+      \end{tabular}
+    \end{tabular}
+  \end{center}
+  \caption{Weighted edit distance between $t=\texttt{agtcag}$ a $p=\texttt{gatca}$.}
+\end{table}
+
+\clearpage
+\section{Needleman--Wunsch}
+
+\begin{equation*}
+  \qquad\operatorname{d}_{t,p}(i,j) =
+  \begin{cases}
+    0 & \text{ if } i=0 \land j = 0,\\
+    i \cdot c & \text{ if } j=0 \land i > 0, \\
+    j \cdot c & \text{ if } i=0 \land j > 0, \\
+    \max
+      \begin{cases}
+        \operatorname{d}_{t,p}(i-1,j) + c \\
+        \operatorname{d}_{t,p}(i,j-1) + c \\
+        \operatorname{d}_{t,p}(i-1,j-1) + S(p_j,t_i)
+      \end{cases} & \text{ otherwise.}
+  \end{cases}
+\end{equation*}
+
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{cc}
+      \begin{tabular}[t]{c|cccc}
+        S   &\texttt{a} &\texttt{g} &\texttt{c} &\texttt{t}\\\hline
+        \texttt{a}  &10   &-1   &-3   &-4\\
+        \texttt{g}  &-1   &7    &-5   &-3\\
+        \texttt{c}  &-3   &-5   &9    &0\\
+        \texttt{t}  &-4   &-3   &0    &8\\\hline
+        c  & -5 \\
+      \end{tabular}
+      \quad
+      \begin{tabular}[t]{c|ccccccc}
+        DP          &\texttt{-}		&\texttt{a}		&\texttt{g}		&\texttt{t}		&\texttt{c}		&\texttt{a}		&\texttt{g}\\
+        \hline
+        \texttt{-}	&\tm{l10}  0\tm{r10}  &\tm{l11} -5\tm{r11}	&\tm{l12}-10\tm{r12}    &\tm{l13}-15\tm{r13}    &\tm{l14}-20\tm{r14}	&\tm{l15}-25\tm{r15}	&\tm{l16}-30\tm{r16}\\[2px]
+        \texttt{g}	&\tm{l20} -5\tm{r20}  &\tm{l21} -1\tm{r21}	&\tm{l22}  2\tm{r22}	&\tm{l23} -3\tm{r23}	&\tm{l24} -8\tm{r24}	&\tm{l25}-13\tm{r25}	&\tm{l26}-18\tm{r26}\\[2px]
+        \texttt{a}	&\tm{l30}-10\tm{r30}  &\tm{l31}  5\tm{r31}	&\tm{l32}  0\tm{r32}	&\tm{l33} -2\tm{r33}	&\tm{l34} -6\tm{r34}	&\tm{l35}  2\tm{r35}	&\tm{l36} -3\tm{r36}\\[2px]
+        \texttt{t}	&\tm{l40}-15\tm{r40}  &\tm{l41}  0\tm{r41}	&\tm{l42}  2\tm{r42}	&\tm{l43}  8\tm{r43}	&\tm{l44}  3\tm{r44}	&\tm{l45} -2\tm{r45}	&\tm{l46} -1\tm{r46}\\[2px]
+        \texttt{c}	&\tm{l50}-20\tm{r50}  &\tm{l51} -5\tm{r51}	&\tm{l52} -3\tm{r52}	&\tm{l53}  3\tm{r53}	&\tm{l54}  17\tm{r54}	&\tm{l55} 12\tm{r55}	&\tm{l56} 7\tm{r56}\\[2px]
+        \texttt{a}	&\tm{l60}-25\tm{r60}  &\tm{l61}-10\tm{r61}	&\tm{l62} -6\tm{r62}	&\tm{l63} -2\tm{r63}	&\tm{l64} 12\tm{r64}	&\tm{l65}  27\tm{r65}	&\tm{l66}  22\tm{r66}\\[2px]
+      \end{tabular}
+    \end{tabular}
+  \end{center}
+  \caption{Needleman--Wunsch price of alignment between $t=\texttt{agtcag}$ a $p=\texttt{gatca}$.}
+\end{table}
+
+\clearpage
+\section{Algorithm implementations}
+\cpplistings{tut6/levensthein}{Implementation of Levenshtein distance algorithm.}{{17-44}}
+  \clistings{tut6/distance}{Implementation of Levenshein distance algorithm with backtracking.}{{23-61}}
+\cpplistings{tut6/wed}{Implementation of Weighted edit distance algorithm.}{{89-134}}
+\cpplistings{tut6/nw}{Implementation of Needleman--Wunsch algorithm.}{{73-106}}

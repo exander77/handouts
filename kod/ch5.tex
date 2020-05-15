@@ -1,0 +1,451 @@
+\chapter{Dictionary methods}
+
+\section{LZ77}
+
+The LZ77 is based on the idea of sliding window divided to two parts, search buffer (SB) and lookahead buffer (LB).
+Current position is always between SB and LB and is initialized on the first character of the string. In each iteration LZ77 produces a triplet $(\texttt{i}, \texttt{j}, \texttt{a})$ by searching longest possible prefix of LB within SB, where:
+\begin{itemize}
+  \item[\texttt{i}] is an index (counted from current position to the left),
+  \item[\texttt{j}] is a count (number of matching symbols),
+  \item[\texttt{a}] is a following symbol (first different symbol afther the match).
+\end{itemize}
+The dot will be used to mark current position and we consider $|SB|=6$ and $|LB|=4$.
+
+\subsection{Examples}
+
+Given
+$$T = \texttt{aabaabaaabaaabaa}$$,
+the algorithm proceeds as follows.
+$$T = \texttt{.aabaabaaabaaabaa}$$
+$$ \texttt{(0, 0, a)} $$
+$$T = \texttt{a.abaabaaabaaabaa}$$
+$$ \texttt{(0, 1, b)} $$
+$$T = \texttt{aab.aabaaabaaabaa}$$
+$$ \texttt{(2, 3, a)} $$
+$$T = \texttt{aabaaba.aabaaabaa}$$
+$$ \texttt{(3, 3, a)} $$
+$$T = \texttt{aabaabaaaba.aabaa}$$
+$$ \texttt{(3, 3, a)} $$
+$$T = \texttt{aabaabaaabaaaba.a}$$
+$$ \texttt{(0, 0, a)} $$
+$$T = \texttt{aabaabaaabaaabaa.}$$
+The following symbol can never be empty, so even if there would a match for it in the SB, is is not going to be used.
+Result: $$ \texttt{(0, 0, a), (0, 1, b), (2, 3, a), (3, 3, a), (3, 3, a), (0, 0, a)} $$
+
+Given
+$$T = \texttt{abababcacacababa}$$,
+the algorithm proceeds as follows.
+$$T = \texttt{.abababcacacababa}$$
+$$ \texttt{(0, 0, a)} $$
+$$T = \texttt{a.bababcacacababa}$$
+$$ \texttt{(0, 0, b)} $$
+$$T = \texttt{ab.ababcacacababa}$$
+$$ \texttt{(1, 3, b)} $$
+Notice this special case, where we actually cross the boundary between SB and LB. It can be done because each additional symbol will be known during the decompression.
+$$T = \texttt{ababab.cacacababa}$$
+$$ \texttt{(0, 0, c)} $$
+$$T = \texttt{abababc.acacababa}$$
+$$ \texttt{(2, 1, c)} $$
+$$T = \texttt{abababcac.acababa}$$
+$$ \texttt{(1, 3, b)} $$
+Again similar case as before.
+$$T = \texttt{abababcacacab.aba}$$
+$$ \texttt{(1, 2, a)} $$
+$$T = \texttt{abababcacacababa.}$$
+Result: $$ \texttt{(0, 0, a), (0, 0, b), (1, 3, b), (0, 0, c), (2, 1, c), (1, 3, b), (1, 2, a)} $$
+
+Decompression is follows the same pattern and it is actually simpler, because there is no need to search for the best match. The only think done in each step is the copying symbols from SB (and possibly LB) into the LB.
+
+You can examine the special case above during decompression, consider this state:
+$$T = \texttt{abababcac.}$$,
+where you want to add the following triplet:
+$$ \texttt{(1, 3, b)} $$
+You need to copy $3$ symbols from possition $1$ and the append \texttt{b} resulting in this:
+$$T = \texttt{abababcac.acab}$$.
+As you can see, the \texttt{ac} was copied from SB and then \texttt{a} from LB and then it was followed with \texttt{a} as the following symbol.
+
+\section{LZ78}
+
+In LZ78 the sliding window is replaced with standard trie like dictionary where nodes are numbered from $0$ incrementally and their number is used as reference. In each iteration algorithm produces a pair $(\texttt{i}, \texttt{a})$ by searching longest possible prefix from current position in the dictionary, where:
+\begin{itemize}
+  \item[\texttt{i}] is an index into the dictionary,
+  \item[\texttt{a}] is a following symbol.
+\end{itemize}
+The dictionary is extended after each iteration by the processed string.
+
+\clearpage
+\subsection{Examples}
+
+Given
+$$T = \texttt{aabaabaaabaaabaa}$$, 
+the algorithm stars with empty tree containing only root node which represents empty string $\varepsilon$ with index $0$.
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(0, a)} $$
+
+Node 1 for \texttt{a} is added.
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}}]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(1, b)}$$
+
+Node 2 for \texttt{ab} is added.
+
+\begin{marginfigure}[-1.5cm]
+\hspace{1cm}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(1, a)}$$
+
+Node 3 for \texttt{aa} is added.
+
+\begin{marginfigure}[-1.5cm]
+\hspace{2cm}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]
+                                                [3,edge label={node[el style, draw=none]{a}}]]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(0, b)}$$
+
+Node 4 for \texttt{b} is added.
+
+\begin{marginfigure}[-1.3cm]
+\hspace{3.25cm}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]
+                                                [3,edge label={node[el style, draw=none]{a}}]]
+   [4,edge label={node[el style, draw=none]{b}}]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(3, a)}$$
+
+Node 5 for \texttt{aaa} is added.
+
+\begin{marginfigure}[-1.3cm]
+\hspace{4.4cm}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]
+                                                [3,edge label={node[el style, draw=none]{a}} [5,edge label={node[el style, draw=none]{a}}]]]
+   [4,edge label={node[el style, draw=none]{b}}]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(4, a)}$$
+
+Node 6 for \texttt{ba} is added.
+
+\begin{marginfigure}[-2.4cm]
+\hspace{2.25cm}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]
+                                                [3,edge label={node[el style, draw=none]{a}} [5,edge label={node[el style, draw=none]{a}}]]]
+   [4,edge label={node[el style, draw=none]{b}} [6,edge label={node[el style, draw=none]{a}}]]]
+\end{forest}
+\end{marginfigure}
+
+$$ \texttt{(3, b)}$$
+
+Node 7 for \texttt{aab} is added.
+
+\begin{marginfigure}[-2.6cm]
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+[0 [1,edge label={node[el style, draw=none]{a}} [2,edge label={node[el style, draw=none]{b}}]
+                                                [3,edge label={node[el style, draw=none]{a}} [5,edge label={node[el style, draw=none]{a}}] 
+                                                                                             [7,edge label={node[el style, draw=none]{b}}]]]
+   [4,edge label={node[el style, draw=none]{b}} [6,edge label={node[el style, draw=none]{a}}]]]
+\end{forest}
+  
+  \caption{$LZ78(\text{aabaabaaabaaabaa})$}
+\end{marginfigure}
+
+$$ \texttt{(1, a)}$$
+
+Result: $$ \texttt{(0, a), (1, b), (1, a), (0, b), (3, a), (4, a), (3, b), (1, a)}$$
+
+Given
+$$T = \texttt{abababcacacababa}$$,
+the algorithm proceeds similarly as with the previous example.
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+  [0 [1,edge label={node[el style, draw=none]{a}} [3,edge label={node[el style, draw=none]{b}} [4,edge label={node[el style, draw=none]{c}}]]
+                                                  [5,edge label={node[el style, draw=none]{c}} [5,edge label={node[el style, draw=none]{a}}]]]
+     [2,edge label={node[el style, draw=none]{b}} [7,edge label={node[el style, draw=none]{a}}]]]
+\end{forest}
+
+  \caption{$LZ78(\text{abababcacacababa})$}
+
+\end{marginfigure}
+
+Result: $$ \texttt{(0, a), (0, b), (1, b), (3, c), (1, c), (5, a), (2, a), (2, a)}$$
+
+The decompression proceeds simiarly by building an index using trie or table.
+
+Given: $$ \texttt{(0, a), (1, b), (1, a), (0, b), (3, a), (4, a), (3, b), (1, a)}$$
+the algorithm stars with empty table containing only empty string $\varepsilon$ with index $0$.
+
+In each step you process a pair from the compressed input and add new index into dictionary. The encoded pair is decoded based on the previously added values.
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|l|l}
+    index & enc. phrase & dec. phrase \\
+    \hline
+    0 & $\varepsilon$ & $\varepsilon$\\
+    1 & 0a & \texttt{a}\\
+    2 & 1b & \texttt{ab}\\
+    3 & 1a & \texttt{aa}\\
+    4 & 0b & \texttt{b}\\
+    5 & 3a & \texttt{aaa}\\
+    6 & 4a & \texttt{ba}\\
+    7 & 3b & \texttt{aab}\\
+    8 & 1a & \texttt{aa}\\
+  \end{tabular}
+  \end{center}
+  \caption{$LZ78^R(LZ78(\text{aabaabaaabaaabaa}))$}
+\end{figure}
+
+Given: $$ \texttt{(0, a), (0, b), (1, b), (3, c), (1, c), (5, a), (2, a), (2, a)}$$
+the algorithm stars with empty table containing only empty string $\varepsilon$ with index $0$.
+
+In each step you process a pair from the compressed input and add new index into dictionary. The encoded pair is decoded based on the previously added values.
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|l|l}
+    index & enc. phrase & dec. phrase \\
+    \hline
+    0 & $\varepsilon$ & $\varepsilon$\\
+    1 & 0a & \texttt{a}\\
+    2 & 0b & \texttt{b}\\
+    3 & 1b & \texttt{ab}\\
+    4 & 3c & \texttt{abc}\\
+    5 & 1c & \texttt{ac}\\
+    6 & 5a & \texttt{aca}\\
+    7 & 2a & \texttt{ba}\\
+    8 & 2a & \texttt{ba}\\
+  \end{tabular}
+  \end{center}
+  \caption{$LZ78^R(LZ78(\text{abababcacacababa}))$}
+\end{figure}
+
+This method has no special cases.
+
+\section{LZW}
+
+LZW behaves similarly as LZ78, but the following symbol is dropped and in each iteration algorithm produces just the indes into the dictionary \texttt{i}. The dictionary is not initialized empty, but contains all characters of the alphabet instead.
+The dictionary is extended after each iteration by the processed string and a following symbol. You can think about it that the following character is encoded this way. That trere is a overlap between string added into the dictionary then next processed string.
+We consider alphabet $\Sigma = \{\texttt{a}, \texttt{b}, \texttt{c}\}$.
+
+\begin{figure}
+\begin{center}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+  [0 [1,edge label={node[el style, draw=none]{a}}]                                         
+     [2,edge label={node[el style, draw=none]{b}}]
+     [3,edge label={node[el style, draw=none]{c}}]]
+\end{forest}
+\end{center}
+  \caption{LZW - newly initialized dictionary}
+\end{figure}
+
+Given
+$$T = \texttt{aabaabaaabaaabaa}$$,
+the algorithm proceeds as follows.
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+  [0 [1,edge label={node[el style, draw=none]{a}} [4,edge label={node[el style, draw=none]{a}} [7,edge label={node[el style, draw=none]{b}} [9,edge label={node[el style, draw=none]{a}}]] [10,edge label={node[el style, draw=none]{a}}]]
+                                                  [5,edge label={node[el style, draw=none]{b}} [11,edge label={node[el style, draw=none]{a}}]]]                                         
+     [2,edge label={node[el style, draw=none]{b}} [6,edge label={node[el style, draw=none]{a}} [8,edge label={node[el style, draw=none]{a}}]]]
+     [3,edge label={node[el style, draw=none]{c}}]]
+\end{forest}
+
+  \caption{$LZW(\text{aabaabaaabaaabaa})$}
+\end{marginfigure}
+
+Result: $$ \texttt{1, 1, 2, 4, 6, 7, 4, 5, 4}$$
+
+Given
+$$T = \texttt{abababcacacababa}$$,
+the algorithm proceeds as follows.
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+  [0 [1,edge label={node[el style, draw=none]{a}} [4,edge label={node[el style, draw=none]{b}} [6,edge label={node[el style, draw=none]{a}}] [7,edge label={node[el style, draw=none]{c}}]]
+                                                  [9,edge label={node[el style, draw=none]{c}}]]                                         
+     [2,edge label={node[el style, draw=none]{b}} [5,edge label={node[el style, draw=none]{a}} [12,edge label={node[el style, draw=none]{b}}]]]
+     [3,edge label={node[el style, draw=none]{c}} [8,edge label={node[el style, draw=none]{a}} [10,edge label={node[el style, draw=none]{c}}] [11,edge label={node[el style, draw=none]{b}}]]]]
+\end{forest}
+
+  \caption{$LZW(\text{aabaabaaabaaabaa})$}
+\end{marginfigure}
+
+Result: $$ \texttt{1, 2, 4, 4, 3, 1, 8, 8, 5, 5}$$
+
+The decompression proceeds simiarly by building an index using trie or table. After second number is decoded adding into dictionary starts. The phrases added is alway the previous number plus the first carracter or decoded current number.
+
+Given: $$ \texttt{1, 1, 2, 4, 6, 7, 4, 5, 4}$$
+the algorithm stars with table containing empty string $\varepsilon$ with index $0$ and all symbols of the alphabet with increasing indexes.
+
+In each step you process a pair from the compressed input and add new index into dictionary. The encoded pair is decoded based on the previously added values.
+
+\begin{figure*}
+  \begin{center}
+  \begin{tabular}{c|l|l}
+    index & enc. phrase & dec. phrase \\
+    \hline
+    0 & $\varepsilon$ & $\varepsilon$\\
+    1 & a & \texttt{a}\\
+    2 & b & \texttt{b}\\
+    3 & c & \texttt{c}\\
+    4 & 1a & \texttt{aa}\\
+    5 & 1b & \texttt{ab}\\
+    6 & 2a & \texttt{ba}\\
+    7 & 4b & \texttt{aab}\\
+    8 & 6a & \texttt{baa}\\
+    9 & 7a & \texttt{aaba}\\
+    10 & 4a & \texttt{aaa}\\
+    11 & 5a & \texttt{aba}\\
+  \end{tabular}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    1 & 1 & 2 & 4 & 6 & 7 & 4 & 5 & 4\\
+    \hline
+    a & a & b & aa & ba & aab & aa & ab & aa\\
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{$LZWW^R(LWZ(\text{aabaabaaabaaabaa}))$}
+\end{figure*}
+
+Given: $$ \texttt{1, 2, 4, 4, 3, 1, 8, 8, 5, 5}$$
+the algorithm stars with table containing empty string $\varepsilon$ with index $0$ and all symbols of the alphabet with increasing indexes.
+
+In each step you process a pair from the compressed input and add new index into dictionary. The encoded pair is decoded based on the previously added values.
+
+\begin{figure*}
+  \begin{center}
+  \begin{tabular}{c|l|l}
+    index & enc. phrase & dec. phrase \\
+    \hline
+    0 & $\varepsilon$ & $\varepsilon$\\
+    1 & a & \texttt{a}\\
+    2 & b & \texttt{b}\\
+    3 & c & \texttt{c}\\
+    4 & 1b & \texttt{ab}\\
+    5 & 2a & \texttt{ba}\\
+    6 & 4a & \texttt{aba}\\
+    7 & 4c & \texttt{abc}\\
+    8 & 3a & \texttt{ca}\\
+    9 & 1c & \texttt{ac}\\
+    10 & 8c & \texttt{cac}\\
+    11 & 8b & \texttt{cab}\\
+    12 & 5b & \texttt{bab}\\
+  \end{tabular}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+    1 & 2 & 4 & 4 & 3 & 1 & 8 & 8 & 5 & 5\\
+    \hline
+    a & b & ab & ab & c & a & ca & ca & ba & ba\\
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{$LZW^R(LZW(\text{abababcacacababa}))$}
+\end{figure*}
+
+The algorithm has one special case - when the currently encoded string is a prefix minus $1$ character from the next string. If this case does not concerd one of the initial nodes, it is represented by a node which parent has index minus $1$.
+
+Given
+$$T = \texttt{abbbbabc}$$,
+the algorithm proceeds as follows..
+
+\begin{marginfigure}
+\begin{forest}
+  for tree={child anchor=north,inner sep=5pt},
+%
+  [0 [1,edge label={node[el style, draw=none]{a}} [4,edge label={node[el style, draw=none]{b}}]]                                         
+     [2,edge label={node[el style, draw=none]{b}} [5,edge label={node[el style, draw=none]{b}} [7,edge label={node[el style, draw=none]{b}}]] [6,edge label={node[el style, draw=none]{a}}]]
+     [3,edge label={node[el style, draw=none]{c}}]]
+\end{forest}
+
+  \caption{$LZW(\text{abbbbabc})$}
+\end{marginfigure}
+
+Result: $$ \texttt{1, 2, 5, 2, 4, 3}$$
+
+Given: $$ \texttt{1, 2, 5, 2, 4, 3}$$
+the algorithm stars with table containing empty string $\varepsilon$ with index $0$ and all symbols of the alphabet with increasing indexes.
+
+In each step you process a pair from the compressed input and add new index into dictionary. The encoded pair is decoded based on the previously added values.
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|l|l}
+    index & enc. phrase & dec. phrase \\
+    \hline
+    0 & $\varepsilon$ & $\varepsilon$\\
+    1 & a & \texttt{a}\\
+    2 & b & \texttt{b}\\
+    3 & c & \texttt{c}\\
+    4 & 1b & \texttt{ab}\\
+    5 & 5b & \texttt{bb}\\
+    6 & 5b & \texttt{bbb}\\
+    7 & 2a & \texttt{ba}\\
+  \end{tabular}
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    1 & 2 & 5 & 2 & 4 & 3\\
+    \hline
+    a & b & bb & b & ab & c\\
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{$LZW^R(LZW(\text{abbbbabc}))$}
+\end{figure}
+
+\section{Homework}
+
+\begin{itemize}
+  \item Try to figure out efficient way how to encode outputs from LZ77, LZ78 and LZW methods. 
+  \item Try to figure out how many bits you will need for the encoding.
+  \item Try to calculate compression rations. 
+\end{itemize}

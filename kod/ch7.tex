@@ -1,0 +1,118 @@
+\chapter{Context methods II}
+
+\section{BWC}
+
+Burrows-Wheeler Compression (BWC) is a method based on Burrows-Wheeler Transformation (BTW), Move-to-Front usually followed by Huffman Coding.
+
+\begin{figure*}
+  \begin{center}
+  \begin{tabular}{c}
+    \\
+    \hline
+    rotations \\
+    \hline
+    mississippi \\
+    ississippim \\
+    ssissippimi \\
+    sissippimis \\
+    issippimiss \\
+    ssippimissi \\
+    sippimissis \\
+    ippimississ \\
+    ppimississi \\
+    pimississip \\
+    imississipp \\
+    \hline
+    \\
+    \\
+  \end{tabular}
+  \hspace*{0.5cm}
+  \begin{tabular}{c|c}
+    \multicolumn{2}{c}{BWT} \\
+    \hline
+    i & sorted rotations \\
+    \hline
+    0 & imississipp \\
+    1 & ippimississ \\
+    2 & issippimiss \\
+    3 & ississippim \\
+    4 & mississippi \\
+    5 & pimississip \\
+    6 & ppimississi \\
+    7 & sippimissis \\
+    8 & sissippimis \\
+    9 & ssippimissi \\
+    10 & ssissippimi \\
+    \hline
+    \multicolumn{2}{c}{} \\
+    \multicolumn{2}{c}{$4, \text{pssmipissii}$} \\
+  \end{tabular}
+  \hspace*{0.5cm}
+  \begin{tabular}{c|c|c}
+    \multicolumn{3}{c}{Move-to-Front} \\
+    \hline
+    input & alphabet & output \\
+    \hline
+    p & imps & 2 \\
+    s & pims & 3 \\
+    s & spim & 0 \\
+    m & spim & 3 \\
+    i & mspi & 3 \\
+    p & imsp & 3 \\
+    i & pims & 1 \\
+    s & ipms & 3 \\
+    s & sipm & 0 \\
+    i & sipm & 1 \\
+    i & ispm & 0 \\
+    \hline
+    \multicolumn{3}{c}{} \\
+    \multicolumn{3}{c}{$4, (2,3,0,3,3,3,1,3,0,1,0)$} \\
+  \end{tabular}
+  \end{center}
+  \caption{$BWC(\text{mississippi})$}
+\end{figure*}
+
+\begin{figure*}
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    input & alphabet & output \\
+    \hline
+    2 & imps & p \\
+    3 & pims & s \\
+    0 & spim & s \\
+    3 & spim & m \\
+    3 & mspi & i \\
+    3 & imsp & p \\
+    1 & pims & i \\
+    3 & ipms & s \\
+    0 & sipm & s \\
+    1 & sipm & i \\
+    0 & ispm & i \\
+    \multicolumn{3}{c}{} \\
+    \multicolumn{3}{c}{$4, \text{pssmipissii}$} \\
+  \end{tabular}
+  \hspace*{0.5cm}
+  \begin{tabular}{c|c|c|c}
+    i & sorted & input & map \\
+    \hline
+    0 & i & p & 5 \\
+    1 & i & s & 7 \\
+    2 & i & s & 8 \\
+    3 & i & m & 4 \\
+    4 & mississippi & i & 0 \\
+    5 & p & p & 6 \\
+    6 & p & i & 1 \\
+    7 & s & s & 9 \\
+    8 & s & s & 10 \\
+    9 & s & i & 2 \\
+    10 & s & i & 3 \\
+    \multicolumn{4}{c}{} \\
+    \multicolumn{4}{c}{mississippi} \\
+  \end{tabular}
+  \end{center}
+  \caption{$BWC^{R}(4, (2,3,0,3,3,3,1,3,0,1,0))$}
+\end{figure*}
+
+\section{DCA}
+
+\section{ACB}

@@ -1,0 +1,215 @@
+\chapter{Coding of integers}
+
+Coding of integers is important prerequisite to data compression. Some of these codes are unable to directly encode $0$ and none of these codes are able to directly encode negative numbers. Generally, these codes can be classified as uniquely decodable and non-uniquely decodable.
+
+\section{Unary codes}
+Encoding\sidenote{$\alpha$-code is uniquely decodable (prefix) code with variable length. It does not have the ability to encode value $0$ or negative numbers directly, usually shift of values is introduced to handle such cases, for example encoding $x+1$ or $x+k, k\geq1$.}:
+
+\subsection{$\alpha$-code}
+$$\alpha(x)=0^{x-1}1$$
+\subsection{$\alpha'$-code}
+This variant has $0$ and $1$ swapped.\sidenote{This variant of $\alpha$-code is primarily used in Golomb Codes.}
+$$\alpha'(x)=1^{x-1}0$$
+\section{Binary codes}
+Encoding\sidenote{$\beta$-codes are non-uniquely decodable codes with variable length. Fixed length binary codes are also widely used, they are uniquely decodable, but alsways encode to the same number of bits and they have a maximum value. $\beta'$-code has leading $1$ removed.}:
+\subsection{$\beta$-code}
+$$\beta(0)=0$$
+$$\beta(1)=1$$
+$$\beta(2i+j)=\beta(i)\beta(j)$$
+\subsection{$\beta'$-code}
+$$\beta'(x) = \beta(x)-10^{|\beta(x)|-1}$$
+
+\section{Ternary codes}
+These codes introduce a special symbol $\#$ for marking end of each keyword. \sidenote{$\tau$-codes are uniquely decodable (prefix) codes with variable length.}
+
+\noindent
+Encoding:
+
+\subsection{$\tau$-code}
+$$\tau(x) = \beta(x)\#$$
+\subsection{$\tau'$-code}
+$$\tau'(x) = \beta'(x)\#$$
+
+\section{Elias codes}
+Encoding\sidenote{$\gamma$-codes are uniquely decodable codes with variable length. Uniquely decodable $\alpha$-code is combined with non-uniquely decodable $\beta$-code. The difference between $\gamma'$-code and $\gamma$-code is that $\gamma$-code is interleaved. $\delta$-code is similar to $\gamma'$-code, but $\alpha$-code is replaced with $\gamma$-code.}:
+
+\subsection{$\gamma'$-code}
+$$\gamma'(x)=\alpha(|\beta(x)|)\beta'(x)$$
+
+\subsection{$\gamma$-code}
+$$y=\alpha(|\beta(x)|), z=\beta'(x)$$
+$$\gamma(x)=y_1,z_1,y_2,z_2,\ldots,z_{|\beta(x)|-1},y_{|\beta(x)|}$$
+
+\subsection{$\delta$-code}
+$$\gamma(x)=\gamma(|\beta(x)|)\beta'(x)$$
+
+\noindent
+The $\omega$-codes have recursive prefix. The value is encoded by $\beta$-code followed with $0$. If the encoded $\beta$-code value is longer than $k, k \geq 2$ then a prefix is recursively prolonged by the prepending the value of $\beta$-code of the length of the previous part encoded by $\beta'$-code (length of $\beta$-code $-1$). If the length of $\beta$-code is shorted then $k$ then zerozes are prepended to make it of length $k$.
+
+\noindent
+Encoding\sidenote{$\omega$-codes are uniquely decodable codes with variable length. They do not have the ability to encode value $0$ or negative numbers directly}
+
+\subsection{$\omega$-code ($k=2$)}
+$$\omega(1) = 0^{k-1} = 0$$
+$$\omega(x)= \text{<prefix>}\beta(x)0$$
+
+\subsection{$\omega'$-code ($k=3$)}
+$$\omega(1) = 0^{k-1} = 00$$
+$$\omega(x)= \text{<prefix>}\beta(x)0$$
+
+\section{Ternary Comma Code}
+It is a simple code based on base 3 number representation and comma (c), which gives the following encoding:
+
+\begin{table}
+\begin{tabular}{|c|c|c|c|}\hline
+    0 & 1 & 2 & c\\\hline
+    00 & 01 & 10 & 11\\\hline
+\end{tabular}
+\caption{Ternary Comma Code}
+\end{table}
+
+\section{Fibbonacci Code}
+Binary number is representation where each position corresponts to $2^i, i \in \mathbb{N}_0$. These powers of $2$ can be raplaced with numbers from Fibbonacci sequence, excluding the initial $1$:
+$$1, 2, 3, 5, 8, 13, 21, 34\ldots$$.
+
+This gives us multiple representations of each number as the two consecutive numbers can always be replaced with the next one, i.e. $11$ has the same meaning as $100$, for example: 
+$$1*5+1*3=1*8+0*5+0*3.$$
+Because of this, each number can be represented using this Fibbonacci representation as a sequeance of $0$ and $1$, where no two consecutive $1$ are present ($11$). When such number is reversed and additional $1$ is appended, it leads to a code, where each additional $1$ marks the end of the keyword.
+
+\section{Golomb Code}
+$GC(x,m)$ is Golomb Code of $x$ in modulo $m$.
+
+\noindent
+Quotient:
+$$q=\floor{x/m}.$$
+Reminder:
+$$r=x-qm.$$
+Coeficient:
+$$c=\ceil{\log_2 m}.$$
+
+\noindent
+Reminder table $R$:\\
+\begin{tabular}{r l l l l}
+    $2^c-m$ & values of & $r$ & $\beta$-code encoded by $c-1$ & bits,\\
+    $2m-2^c$ & values of & $r+2^c-m$ & $\beta$-code encoded by $c$ & bits.
+\end{tabular}
+
+\noindent
+Encoding:
+$$GC(x,m)=\alpha'(q+1)R(r).$$
+
+\subsection{Examples of reminder tables}
+$R$ for $m=3$:
+
+\begin{table}
+\begin{tabular}{|c||c|c|}\hline
+    0 & 1 & 2\\\hline
+    0 & 10 & 11\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=3$}
+\end{table}
+
+\noindent
+$R$ for $m=4$:
+
+\begin{table}
+\begin{tabular}{||c|c|c|c|}\hline
+    0 & 1 & 2 & 3\\\hline
+    00 & 01 & 10 & 11\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=4$}
+\end{table}
+
+\noindent
+$R$ for $m=5$:
+
+\begin{table}
+\begin{tabular}{|c|c|c||c|c|}\hline
+    0 & 1 & 2 & 3 & 4\\\hline
+    00 & 01 & 10 & 110 & 111\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=5$}
+\end{table}
+
+\noindent
+$R$ for $m=6$:
+
+\begin{table}
+\begin{tabular}{|c|c||c|c|c|c|}\hline
+    0 & 1 & 2 & 3 & 4 & 5\\\hline
+    00 & 01 & 100 & 101 & 110 & 111\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=6$}
+\end{table}
+
+\noindent
+$R$ for $m=7$:
+
+\begin{table}
+\begin{tabular}{|c||c|c|c|c|c|c|}\hline
+    0 & 1 & 2 & 3 & 4 & 5 & 6\\\hline
+    00 & 010 & 011 & 100 & 101 & 110 & 111\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=7$}
+\end{table}
+
+\noindent
+$R$ for $m=8$:
+
+\begin{table}
+\begin{tabular}{||c|c|c|c|c|c|c|c|}\hline
+    0 & 1 & 2 & 3 & 4 & 5 & 6 & 7\\\hline
+    000 & 001 & 010 & 011 & 100 & 101 & 110 & 111\\\hline
+\end{tabular}
+\caption{Golomb Code $R$ for $m=8$}
+\end{table}
+
+\noindent
+$R$ for $m=14$:
+
+\begin{table*}
+\begin{tabular}{|c|c||c|c|c|c|c|c|c|c|c|c|c|c|}\hline
+    0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13\\\hline
+    000 & 001 & 0100 & 0101 & 0110 & 0111 & 1000 & 1001 & 1010 & 1011 & 1100 & 1101 & 1110 & 1111\\\hline
+\end{tabular}
+\\
+\caption{Golomb Code $R$ for $m=14$}
+\end{table*}
+
+\section{Rice Code}
+$RC(x,m) = GC(x,m)$ if $m = 2^k, k \in \mathbb{N}_0$. 
+
+%\section{Properties of codes}
+
+%Universal, Asymptotically optimal
+
+%\section{Examples}
+
+%\begin{table*}
+%\begin{tabular}{|c|r|r|r|r|r|r|r|r|r|r|r|r|r|}\hline
+%    x & $\alpha$-code & $\beta$-code & $\beta'$-code & $\gamma'$-code & $\gamma$-code & $\delta$-code & $\omega$-code & $\omega'$-code \\\hline
+%    0  & -         & $0$      & -       & $\blue1$      & $\blue1$      & $\blue1$      & & \\
+%    1  & $1$       & $1$      & $\varepsilon$ & & & & & \\
+%    2  & $01$      & $10$     & $0$     & $\blue01\red0$     & $0$     & $0$     & & & \\
+%    3  & $001$     & $11$     & $1$     & $\blue01\red1$     & $1$     & $1$     & & \\
+%    4  & $0^31$    & $100$    & $00$    & $\blue001\red00$    & $00$    & $00$    & & \\
+%    5  & $0^41$    & $101$    & $01$    & $\blue001\red01$    & $01$    & $01$    & & \\
+%    6  & $0^51$    & $110$    & $10$    & $\blue001\red10$    & $10$    & $10$    & & \\
+%    7  & $0^61$    & $110$    & $11$    & $\blue001\red10$    & $10$    & $10$    & & \\
+%    8  & $0^71$    & $1000$   & $000$   & $\blue0001\red000$   & $000$   & $000$   & & \\
+%    9  & $0^81$    & $1001$   & $001$   & $\blue0001\red001$   & $001$   & $001$   & & \\
+%    10 & $0^91$    & $1010$   & $010$   & $\blue0001\red010$   & $010$   & $010$   & & \\
+%    11 & $0^{10}1$ & $1011$   & $011$   & $\blue0001\red011$   & $011$   & $011$   & & \\
+%    12 & $0^{11}1$ & $1100$   & $100$   & $\blue0001\red100$   & $100$   & $100$   & & \\
+%    13 & $0^{12}1$ & $1101$   & $101$   & $\blue0001\red101$   & $101$   & $101$   & & \\
+%    14 & $0^{13}1$ & $1110$   & $110$   & $\blue0001\red110$   & $110$   & $110$   & & \\
+%    15 & $0^{14}1$ & $1111$   & $111$   & $\blue0001\red111$   & $111$   & $111$   & & \\
+%    16 & $0^{15}1$ & $10000$  & $0000$  & $\blue00001\red0000$  & $0000$  & $0000$  & & \\
+%    23 & $0^{22}1$ & $10111$  & $0111$  & $\blue00001\red0111$  & $0111$  & $0111$  & & \\
+%    24 & $0^{23}1$ & $11000$  & $1000$  & $\blue00001\red1000$  & $1000$  & $1000$  & & \\
+%    31 & $0^{30}1$ & $11111$  & $1111$  & $\blue00001\red1111$  & $1111$  & $1111$  & & \\
+%    32 & $0^{31}1$ & $100000$ & $00000$ & $\blue000001\red00000$ & $00000$ & $00000$ & & \\\hline
+%\end{tabular}
+%\\
+%\caption{Examples of coding of integers}
+%\end{table*}

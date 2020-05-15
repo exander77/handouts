@@ -1,0 +1,346 @@
+\chapter{Basics}
+
+In this chapter are presented basic stringological principles. For each topic, there are examples and sample codes included for the demonstration.
+
+\section{Alphabet, string, substring, prefix, suffix}
+
+\begin{dt}{Alphabet}
+  $\Sigma$ is a set of symbols.
+\end{dt}
+
+\begin{figure}
+\begin{equation*}
+  \begin{aligned}[l]
+    \Sigma_0 &= \{a, b\}\\
+    \Sigma_1 &= \{0, 1\}\\
+    \Sigma_2 &= \{c, g, a, t\}\\
+    \Sigma_3 &= \{0, 1, 2, 3, 4, 5, 6, 7, 8, 9\}\\
+    \Sigma_4 &= \{a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, z\}\\
+  \end{aligned}
+\end{equation*}
+\caption{Sample alphabets.}
+\end{figure}
+
+\begin{dt}{String}
+  $x$ is a concatenation of symbols of alphabet $\Sigma$.
+\end{dt}
+
+\begin{figure}
+\begin{equation*}
+  \begin{aligned}
+    x_0 &= ababa\\
+    x_1 &= 1100\\
+    x_2 &= ccagacgatt\\
+    x_3 &= 1713498110\\
+    x_4 &= abracadabra\\
+  \end{aligned}
+\end{equation*}
+\caption{Sample strings.}
+\end{figure}
+
+\begin{dt}{Substring}
+  $x[i \isep j]$ of string $x$ is a string where $1 \leq i \leq j \leq |x|$.
+\end{dt}
+
+\begin{figure}
+    $abracadabra, dabra, cada, bracadabr$
+\caption{Sample substring of string $x$ = abracadabra.}
+\end{figure}
+
+\begin{dt}{Proper substring}
+  $x[i \isep j]$ of string $x$ is a substring of string $x$ where $i > 1 \lor j < |x|$.
+\end{dt}
+
+\begin{dt}{Prefix}
+  $x[i \isep j]$ of string $x$ is a substring of string $x$ where $i = 1$.
+\end{dt}
+
+\begin{dt}{Proper prefix}
+  of string $x$ is a prefix of string $x$ which is also a proper substring of string $x$.
+\end{dt}
+
+\begin{dt}{Suffix}
+  $x[i \isep j]$ of string $x$ is a substring of string $x$ where $j = |x|$.
+\end{dt}
+
+\begin{dt}{Proper suffix}
+  of string $x$ is a suffix of string $x$ which is also a proper substring of string $x$.
+\end{dt}
+
+\section{Normal form}
+
+\begin{dt}{A Normal form}
+  is a string $x$ decomposition to prefix $x[1 \isep p^*]$ of length of minimal period $p^*$ and its exponent $r^*$. The normal form classify the string $x$ by the exponent $r^*$ to:
+  \begin{align*}
+    r^*=1 & & \ \text{primitive (aperiodical),}\\
+    1<r^*<2 & & \ \text{weakly peridical,}\\
+    r^* \geq 2 & & \ \text{strongly periodical,}\\
+    r^* \geq 2 \land r^* \in N & & \ \text{repetition,}\\
+    r^*=2 \lor r^*=3 & & \ \text{square or cube respectively.}
+  \end{align*}
+\end{dt}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{c|cccccccccccccccccccc}
+      x & normal form & classification\\
+      \hline
+      abcabcabcc & $(abcabcabcc)^1$ & primitive\\
+      aaaaaaaaab & $(aaaaaaaaab)^1$ & primitive\\
+      abcdefghij & $(abcdefghij)^1$ & primitive\\
+      abcdea & $(abcde)^{6/5}$ & weakly periodical\\
+      abcdeab & $(abcde)^{7/5}$ & weakly periodical\\
+      abcabcabca & $(abc)^{10/3}$ & strongly periodical\\
+      abcabcabcab & $(abc)^{11/3}$ & strongly periodical\\
+      abcabcabc & $(abc)^3$ & repetition, cube\\
+      abcdabcd & $(abcd)^2$ & repetition, square\\
+    \end{tabular}
+  \end{center}
+  \caption{Strings classified by their normal form.}
+\end{table}
+
+\section{Lyndon words and Lyndon decomposition}
+
+\begin{dt}{A Lyndon word}
+  is a primitive word that is \emph{lexicographically minimal rotation} of itself (minimal in its conjugacy class).
+\end{dt}
+
+\begin{dt}{A Lyndon decomposition (Standard factorisation)}
+  is a lexicographically \emph{nonincreasing sequance of Lyndon words}. There is only one unique decomposition for each string. It can be constructed in linear time.
+\end{dt}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & c & bc &b &b & aabaac & aaac & a 
+  \end{tabular}
+  \caption{Lyndon decomposition for string $T$=cbcbbaabaacaaaca.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & abababcacac & ab & ab & a
+  \end{tabular}
+  \caption{Lyndon decomposition for string $T$=abababcacacababa.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & abc & abbabcabcabcc
+  \end{tabular}
+  \caption{Lyndon decomposition for string $T$=abcabbabcabcabcc.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & aab & aab & aaab & aaab & a & a 
+  \end{tabular}
+  \caption{Lyndon decomposition for string $T$=aabaabaaabaaabaa.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & abcdefgh & abcdefgh
+  \end{tabular}
+  \caption{Lyndon decomposition for string $T$=abcdefghabcdefgh.}
+\end{table}
+
+\section{Lempel--Ziv (LZ77) factorisation}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & c & b & cb & b & a & a & baa & c & aa & aca 
+  \end{tabular}
+  \caption{Lempel--Ziv factorisation for string $T$=cbcbbaabaacaaaca.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & a & b & abab & c & a & caca & baba
+  \end{tabular}
+  \caption{Lempel--Ziv factorisation for string $T$=abababcacacababa.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & a & b & c & ab & b & abcab & cabc & c
+  \end{tabular}
+  \caption{Lempel--Ziv factorisation for string $T$=abcabbabcabcabcc.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & a & a & b & aabaa & abaaabaa 
+  \end{tabular}
+  \caption{Lempel--Ziv factorisation for string $T$=aabaabaaabaaabaa.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    T & a & b & c & d & e & f & g & h & abcdefgh
+  \end{tabular}
+  \caption{Lempel--Ziv factorisation for string $T$=abcdefghabcdefgh.}
+\end{table}
+
+\section{Border array}
+
+\begin{dt}{Border}
+  of string $x$ is a proper prefix of string $x$ which is also a (proper) suffix of string $x$.
+\end{dt}
+
+\begin{dt}{Border Array}
+  of string $x$ is an array of lengths of the longest borders for each prefix of $x$.
+\end{dt}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccc}
+    i: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    T[i]: & c & b & c & b & b & a & a & b & a & a & c & a & a & a & c & a\\
+    \hline
+    $\beta$[i]: & 0 & 0 & 1 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0
+  \end{tabular}
+  \caption{Border Array for string $T$=cbcbbaabaacaaaca.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccc}
+    i: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    T[i]: & a & b & a & b & a & b & c & a & c & a & c & a & b & a & b & a\\
+    \hline
+    $\beta$[i]: & 0 & 0 & 1 & 2 & 3 & 4 & 0 & 1 & 0 & 1 & 0 & 1 & 2 & 3 & 4 & 5
+  \end{tabular}
+  \caption{Border Array for string $T$=abababcacacababa.}
+\end{table}
+
+\begin{table}
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccc}
+    i: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    T[i]: & a & b & c & a & b & b & a & b & c & a & b & c & a & b & c & c\\
+    \hline
+    $\beta$[i]: & 0 & 0 & 0 & 1 & 2 & 0 & 1 & 2 & 3 & 4 & 5 & 3 & 4 & 5 & 3 & 0
+  \end{tabular}
+  \caption{Border Array for string $T$=abcabbabcabcabcc.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccc}
+    i: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    T[i]: & a & a & b & a & a & b & a & a & a & b & a & a & a & b & a & a\\
+    \hline
+    $\beta$[i]: & 0 & 1 & 0 & 1 & 2 & 3 & 4 & 5 & 2 & 3 & 4 & 5 & 2 & 3 & 4 & 5
+  \end{tabular}
+  \caption{Border Array for string $T$=aabaabaaabaaabaa.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    $i$: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    $T$[$i$]: & a & b & c & d & e & f & g & h & a & b & c & d & e & f & g & h\\
+    \hline
+    $\beta$[$i$]: & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8
+  \end{tabular}
+  \caption{Border Array for string $T$=abcdefghabcdefgh.}
+\end{table}
+
+\begin{table}[h]
+  \footnotesize
+  \begin{tabular}{c|cccccccccccccccccccc}
+    $i$: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16\\
+    \hline
+    $T$[$i$]: & a & a & a & a & a & a & a & a & a & a & a & a & a & a & a & a\\
+    \hline
+    $\beta$[$i$]: & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15
+  \end{tabular}
+  \caption{Border Array for string $T$=aaaaaaaaaaaaaaaa.}
+\end{table}
+
+\clearpage
+\section{Algorithm implementations}
+\cpplistings{tut1/duval}{Implementation of Duval's Lyndon Factorisation algorithm.}{{13-31}}
+\cpplistings{tut1/ba}{Implementation of Border Array constraction algorithm.}{{12-24}}
+\cpplistings{tut1/lz_factorization}{Naive implementation of LZ-factorization algorithm.}{{12-29}}
+\cpplistings{tut1/lyndon_rotation}{Implementation of Lyndon rotation algorithm.}{{13-35}}
+\cpplistings{tut1/csc}{Implementation of circular string comparison algorithm.}{{12-26}}
+
+
+%\paragraph*{Abeceda $\Sigma$---doba přístupu k položce:}
+%\begin{itemize}
+%	\item řazená (definovány operace $<,>,\leq{},\geq$)---$O\left(\log{|\Sigma|}\right)$
+%	\item neřazená---$O\left({|\Sigma|}\right)$
+%	\item částečně řazená---$O\left({|\Sigma|}\right)$
+%	\item indexovaná---$O\left({1}\right)$
+%\end{itemize}
+%
+%\paragraph*{Řetězec $x=x[1]x[2]...x[n]$ $(|x|=n)$:}
+%\begin{itemize}
+%	\item lineární (linear string)
+%	\item cyklický (necklase, circular string)
+%	\item nekonečný (infinite string)
+%	\item oboustraně nekonečný (infinite necklase)
+%\end{itemize}
+%
+%\paragraph*{Vzorek (pattern):}
+%\begin{itemize}
+%	\item specifický (specific)---symboly jsou jasně specifikovány (reg. výraz,...)
+%	\item generický (generic)---popsán pouze formou struktury (všechny repetice v $x$,...)
+%	\item intrinsický (intrinsic)---nepotřebuje charakterizaci (normální forma, Lyndonova dekompozice...)
+%\end{itemize}
+%
+%\paragraph*{Normální forma $x=x[1..n]$:\\}
+%$x = u^{\lfloor{r}\rfloor}u', r = \frac{n}{p}$, kde $u = x[1..p]$---generátor, $p$---perioda, $r$---exponent.
+%Nechť $p^*$ je minimální (co do délky) perioda $x = x[1..n]$ a $r^* = \frac{n}{p^*}, u = x[1..p^*]$,
+%pak dekompozice $x = u^{r^*}$ je nazývána normalní formou $x$.
+%
+%
+%\sample
+%Co je to podřetězec/nadřetězec (vlastní podřetězec/nadřetězec---alespoň jeden symbol odeberu/přidám)? Co je to lexikografické uspořádání? Pokuste se vymyslet smysluplnou definici.\medskip
+%\result
+%Podřetězec $x[i...j]$ je podřetězcem $x$:
+%\begin{itemize}
+%\item $x[i..j] = x[i]x[i + 1]...x[j], 1 \leq i \leq j \leq |x| = n$\\
+%\item $x[i..j] = \varepsilon, \textnormal{ if } i > j$
+%\end{itemize}
+%
+%\sample
+%Je dán řetězec $x=abacabacabac$ nad abecedou $\Sigma=\{a,b,c\}$:\\
+%Převeďte řetězec $x$ do normální formy pro periodicitu řetězce a klasifikujte jej.
+%Definujte řetězec $y$ tak, aby $x.y$ byl a) aperiodický (primitivní), b) silně periodický, c) slabě periodický, d) repetice.
+%
+%\sample
+%Sestrojte border array pro řetězec $x=abacabacabac$ a $y=abacabaaabac$.
+%
+%\result
+%\begin{center}
+%\begin{tabular}{c|cccccccccccc}
+%$x$     & a & b & a & c & a & b & a & c & a & b & a & c\\
+%\hline
+%$\beta$ & 0 & 0 & 1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8\\
+%\end{tabular}
+%\end{center}
+%
+%\begin{center}
+%\begin{tabular}{c|cccccccccccc}
+%$y$     & a & b & a & c & a & b & a & a & a & b & a & c\\
+%\hline
+%$\beta$ & 0 & 0 & 1 & 0 & 1 & 2 & 3 & 1 & 1 & 2 & 3 & 4\\
+%\end{tabular}
+%\end{center}

@@ -1,0 +1,81 @@
+\chapter{FM--index}
+
+Create FM--index for text $T=\texttt{abracadabra}$ and perform search algorithm with pattern $P = \texttt{bdabra}$.
+
+\begin{tabular}{c|ccccccccccc}
+ 	$i$		&1 			&2 			&3 			&4 			&5 			&6 			&7 			&8 			&9 			&10 		&11 \\\hline
+	$T[i]$			&\texttt{a}	&\texttt{b}	&\texttt{r}	&\texttt{a}	&\texttt{c}	&\texttt{a}	&\texttt{d}	&\texttt{a}	&\texttt{b}	&\texttt{r}	&\texttt{a}	\\\hline
+	$SA[i]$		&11			&8			&1			&4			&6			&9			&2			&5			&7			&10			&3			\\\hline
+	$SA[i]-1$	&10			&7			&11			&3			&5			&8			&1			&4			&6			&9			&2			\\\hline
+	$L=T[SA[i]]$	&\texttt{r}	&\texttt{d}	&\texttt{a}	&\texttt{r}	&\texttt{c}	&\texttt{a}	&\texttt{a}	&\texttt{a}	&\texttt{a}	&\texttt{b}	&\texttt{b}	\\\hline
+	$F=T[SA[i]-1]$	&\texttt{a}	&\texttt{a}	&\texttt{a}	&\texttt{a}	&\texttt{a}	&\texttt{b}	&\texttt{b}	&\texttt{c}	&\texttt{d}	&\texttt{r}	&\texttt{r}	\\\hline
+\end{tabular}
+\begin{tabular}{|ll}
+11:	&\texttt{{\red{a}}abracadab{\blue{r}}}\\
+8:	&\texttt{{\red{a}}braabraca{\blue{d}}}\\
+1:	&\texttt{{\red{a}}bracadabr{\blue{a}}}\\
+4:	&\texttt{{\red{a}}cadabraab{\blue{r}}}\\
+6:	&\texttt{{\red{a}}dabraabra{\blue{c}}}\\
+9:	&\texttt{{\red{b}}raabracad{\blue{a}}}\\
+2:	&\texttt{{\red{b}}racadabra{\blue{a}}}\\
+5:	&\texttt{{\red{c}}adabraabr{\blue{a}}}\\
+7:	&\texttt{{\red{d}}abraabrac{\blue{a}}}\\
+10:	&\texttt{{\red{r}}aabracada{\blue{b}}}\\
+3:	&\texttt{{\red{r}}acadabraa{\blue{b}}}\\
+\end{tabular}
+
+\begin{enumerate}
+\item[0.] \begin{itemize}
+	\item $L = \texttt{rdarcaaaabb}$
+	\item $P = \texttt{bdabra}$
+	\item
+		\begin{tabular}{c|ccccc}
+		$c$	&\texttt{a}	&\texttt{b}	&\texttt{c}	&\texttt{d}	&\texttt{r}	\\\hline
+		$C$	&0			&5			&7			&8			&9			\\
+		\end{tabular}
+	\item $sp_i = C[c] + Occ(L, c, sp_{i-1}-1)+1$
+	\item $ep_i = C[c] + Occ(L, c, ep_{i-1})$
+	\item $occ_x = ep - sp + 1$
+	\item $sp_0 = 1$, $ep_0 = \left| L \right| = 11$
+	\end{itemize}
+\end{enumerate}
+%\begin{multicols}{2}
+\begin{enumerate}
+\item \begin{itemize}
+	\item $P=\texttt{bdabr{\red{a}}}$
+	\item $sp_1 = 0+0+1 = 1$
+	\item $ep_1 = 0+5 = 5$
+	\item $occ_{a} = 5-1+1 = 5$
+	\end{itemize}
+\item \begin{itemize}
+	\item $P=\texttt{bdab{\red{r}}a}$
+	\item $sp_2 = 9+0+1 = 10$
+	\item $ep_2 = 9+2 = 11$
+	\item $occ_{ra} = 11-10+1 = 2$
+	\end{itemize}
+\item \begin{itemize}
+	\item $P=\texttt{bda{\red{b}}ra}$
+	\item $sp_3 = 5+0+1 = 6$
+	\item $ep_3 = 5+2 = 7$
+	\item $occ_{bra} = 7-6+1 = 2$
+	\end{itemize}
+\item \begin{itemize}
+	\item $P=\texttt{bd{\red{a}}bra}$
+	\item $sp_4 = 0+1+1 = 2$
+	\item $ep_4 = 0+3 = 3$
+	\item $occ_{abra} = 3-2+1 = 2$
+	\end{itemize}
+\item \begin{itemize}
+	\item $P=\texttt{b{\red{d}}abra}$
+	\item $sp_5 = 8+0+1 = 9$
+	\item $ep_5 = 8+1 = 9$
+	\item $occ_{dabra} = 9-9+1 = 1$
+	\end{itemize}
+\item \begin{itemize}
+	\item $P=\texttt{{\red{b}}dabra}$
+	\item $sp_2 = 5+0+1 = 6$
+	\item $ep_2 = 5+0 = 5$
+	\item $occ_{bdabra} = 5-6+1 = 0$
+	\end{itemize}
+\end{enumerate}
+%\end{multicols}

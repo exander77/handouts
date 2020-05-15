@@ -1,0 +1,97 @@
+\chapter{Context methods I}
+
+Context methods are a group of methods of compression which exploits the different probablities of symbols based on the preceeding characters - the context. Each of these methods usually works in a completely different manner, but the basis idea about context is common to all of them.
+
+\section{Entrophy of higher order}
+
+Entrophy of higher order is closely related to context methods. Order is length of the context preceeding the character. When is order $0$ it means that the context is empty and it is just and ordinary entrophy.
+
+\begin{dt}{Entrophy of $0$ order, $T = \Sigma^+$.}
+  The entrophy of $0$ order is defined $$H_{0}(T) = - \sum_{a \in \Sigma} \frac{|T_a|}{n} \log_2 \frac{|T_a|}{n}.$$
+\end{dt}
+
+\begin{dt}{Entrophy of $k$ order, $k > 0$.}
+  The entrophy of $k$ order is defined $$H_{k}(T) = \frac{1}{n} \sum_{w \in \Sigma^k} |w_T| H_0(w_T).$$
+\end{dt}
+
+\begin{figure}
+    $$H_{0}(\text{aabaabaaabaaabaa}) = - (\frac{12}{16} \log_2 \frac{12}{16} + \frac{4}{16} \log_2 \frac{4}{16})$$
+  \caption{$H_{0}(\text{aabaabaaabaaabaa})$}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    $w$ & $w_T$ & $|w_T|$ \\
+    \hline
+    a & ababaabaaba & 11 \\
+    b & aaaa & 4 \\
+  \end{tabular}
+  \end{center}
+    $$H_{1}(\text{aabaabaaabaaabaa}) = \frac{1}{16} (11 H_{0}(\text{ababaabaaba}) + 4 H_{0}(\text{aaaa}))$$
+  \caption{$H_{1}(\text{aabaabaaabaaabaa})$}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    $w$ & $w_T$ & $|w_T|$ \\
+    \hline
+    aa & bbabab & 5 \\
+    ab & aaaa & 4 \\
+    ba & aaaa & 4 \\
+    bb & $\varepsilon$ & 0 \\
+  \end{tabular}
+  \end{center}
+    $$H_{2}(\text{aabaabaaabaaabaa}) = \frac{1}{16} (5 H_{0}(\text{bbabab}) + 4 H_{0}(\text{aaaa}) + 4 H_{0}(\text{aaaa}))$$
+  \caption{$H_{2}(\text{aabaabaaabaaabaa})$}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    $w$ & $w_T$ & $|w_T|$ \\
+    \hline
+    aaa & bb & 2 \\
+    aab & aaaa & 4 \\
+    aba & aaaa & 4 \\
+    abb & $\varepsilon$ & 0 \\
+    baa & baa & 3 \\
+    bab & $\varepsilon$ & 0 \\
+    bba & $\varepsilon$ & 0 \\
+    bbb & $\varepsilon$ & 0 \\
+  \end{tabular}
+  \end{center}
+    $$H_{3}(\text{aabaabaaabaaabaa}) = \frac{1}{16} (2 H_{0}(\text{bb}) + 4 H_{0}(\text{aaaa}) + 4 H_{0}(\text{aaaa}) + 3 H_{0}(\text{baa}))$$
+  \caption{$H_{3}(\text{aabaabaaabaaabaa})$}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    $w$ & $w_T$ & $|w_T|$ \\
+    \hline
+    aaaa & $\varepsilon$ & 0 \\
+    aaab & aa & 2 \\
+    aaba & aaaa & 4 \\
+    aabb & $\varepsilon$ & 0 \\
+    abaa & baa & 3 \\
+    abab & $\varepsilon$ & 0 \\
+    abba & $\varepsilon$ & 0 \\
+    abbb & $\varepsilon$ & 0 \\
+    baaa & bb & 2 \\
+    baab & a & 1 \\
+    baba & $\varepsilon$ & 0 \\
+    babb & $\varepsilon$ & 0 \\
+    bbaa & $\varepsilon$ & 0 \\
+    bbab & $\varepsilon$ & 0 \\
+    bbba & $\varepsilon$ & 0 \\
+    bbbb & $\varepsilon$ & 0 \\
+  \end{tabular}
+  \end{center}
+    $$H_{4}(\text{aabaabaaabaaabaa}) = \frac{1}{16} (2 H_{0}(\text{aa}) + 4 H_{0}(\text{aaaa}) + 3 H_{0}(\text{baa}) + 2 H_{0}(\text{bb}) + 1 H_{0}(\text{a}))$$
+  \caption{$H_{4}(\text{aabaabaaabaaabaa})$}
+\end{figure}
+
+\section{PPM}
+

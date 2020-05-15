@@ -1,0 +1,3 @@
+[submodule "evy/src"]
+	path = evy/src
+	url = https://github.com/exander77/efficient-pattern-matching.git

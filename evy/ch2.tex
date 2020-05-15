@@ -1,0 +1,503 @@
+\chapter{Suffix structures}
+
+\section{Suffix array}
+
+There are several algoirthms for the Suffix Array construction. The most prominent is DC3 (Difference Cover, size 3) and which is a $O(n)$ time complexity divide-and-conquer algorithm.
+
+For $T=abaabababbabbb$ calculate Suffix Array (\textit{SA}) and Longest Common Prefix (\textit{LCP}).
+
+\begin{table}[h]
+  \footnotesize
+	\begin{tabular}{c|cccccccccccccccc}
+		        $i$ 		& -1 & 0   & 1   & 2   & 3   & 4   & 5   & 6   & 7   & 8   & 9   & 10  & 11  & 12  & 13  & 14 \\ 
+		\hline $T[i]$ 	& \# & $a$ & $b$ & $a$ & $a$ & $b$ & $a$ & $b$ & $a$ & $b$ & $b$ & $a$ & $b$ & $b$ & $b$ & \$ \\ 
+		\hline $SA[i]$ 	& 14 & 2   & 0   & 3   & 5   & 7   & 10  & 13  & 1   & 4   & 6   & 9   & 12  & 8   & 11  & (-1) \\ 
+		\hline $LCP[i]$ & 0  & 0   & 1   & 3   & 4   & 2   & 3   & 0   & 1   & 2   & 3   & 4   & 1   & 2   & 2   & 0 \\ 
+	\end{tabular} 
+  \caption{Suffix Array for $T=abaabababbabbb$.}
+\end{table}
+
+Suffix Array can be constructed through simple sorting by adding padding characters \# and \$, where \$ $\leq a \in \Sigma \leq$ \#:\\
+$T_{padded}=$\#$abaabababbabbb\$$.
+
+Suffixes can be easily sorted, see~\ref{sortingsuffixes}.
+
+\begin{table}[h]
+  \footnotesize
+	\begin{tabular}{c|l}
+		i & unsorted \\ \hline
+		-1 & \#abaabababbabbb\$ \\
+		0 & abaabababbabbb\$ \\
+		1 & baabababbabbb\$ \\
+		2 & aabababbabbb\$ \\
+		3 & abababbabbb\$ \\
+		4 & bababbabbb\$ \\
+		5 & ababbabbb\$ \\
+		6 & babbabbb\$ \\
+		7 & abbabbb\$ \\
+		8 & bbabbb\$ \\
+		9 & babbb\$ \\
+		10 & abbb\$ \\
+		11 & bbb\$ \\
+		12 & bb\$ \\
+		13 & b\$ \\
+		14 & \$ \\
+	\end{tabular} 
+  \hspace*{1cm}
+	\begin{tabular}{c|l}
+		SA[i] & sorted \\ \hline
+		14 & \$ \\
+		2 & aabababbabbb\$ \\
+		0 & abaabababbabbb\$ \\
+		3 & abababbabbb\$ \\
+		5 & ababbabbb\$ \\
+		7 & abbabbb\$ \\
+		10 & abbb\$ \\
+		13 & b\$ \\
+		1 & baabababbabbb\$ \\
+		4 & bababbabbb\$ \\
+		6 & babbabbb\$ \\
+		9 & babbb\$ \\
+		12 & bb\$ \\
+		8 & bbabbb\$ \\
+		11 & bbb\$ \\
+		-1 & \#abaabababbabbb\$ \\
+	\end{tabular} 
+	\label{sortingsuffixes}
+	\caption{Sorting suffixes of $T_{padded}=$\#$abaabababbabbb\$$.}
+\end{table}
+
+For $P=abaa$ find all occurances using \textit{SA Simple Search}.
+
+\begin{enumerate}
+	\item \begin{itemize}
+			\item $d = -1$, $f = n = 14$
+		\end{itemize}
+	\item \begin{itemize}
+		\item $i \leftarrow (-1 + 14)/2 = 6$
+		\item $L_6 = T[SA[6] .. 13] = T[13 .. 13] = b$
+		\item $l \leftarrow lcp(x, L_6) = 0$
+		\item $L_6[0] > x[0] \Rightarrow b > a \Rightarrow f \leftarrow i = 6$
+	\end{itemize}
+	\item \begin{itemize}
+		\item $i \leftarrow (-1 + 6)/2 = 2$
+		\item $L_2 = T[SA[2] .. 13] = T[3 .. 13] = abababbabbb$
+		\item $l \leftarrow lcp(x, L_2) = 3$
+		\item $L_2[3] > x[3] \Rightarrow b > a \Rightarrow f \leftarrow i = 2$
+	\end{itemize}
+\item \begin{itemize}
+		\item $i \leftarrow (-1 + 2)/2 = 0$
+		\item $L_0 = T[SA[0] .. 13] = T[2 .. 13] = aabababbabbb$
+		\item $l \leftarrow lcp(x, L_0) = 1$
+		\item $L_0[1] < x[1] \Rightarrow a < b \Rightarrow d \leftarrow i = 0$
+	\end{itemize}
+\item \begin{itemize}
+		\item $i \leftarrow (0 + 2)/2 = 1$
+		\item $L_1 = T[SA[1] .. 13] = T[0 .. 13] = abaabababbabbb$
+		\item $l \leftarrow lcp(x, L_1) = 4$
+		\item $l = m \wedge l \neq |L_1| \Rightarrow f \leftarrow i = 1$
+	\end{itemize}
+\item \begin{itemize}
+		\item $d+1 \not< f \Rightarrow (d, f) = (0, 1)$
+	\end{itemize}
+\end{enumerate}
+
+\section{Suffix trie}
+
+For $T=ababbab$ construct Suffix Trie.
+
+\tikzstyle{a} = [above]
+\tikzstyle{c} = [circle, draw, minimum width=0.4cm]
+\tikzstyle{e} = [circle, draw, minimum width=0.4cm, accepting]
+\tikzstyle{level 1} = [level distance=1cm, sibling distance=2cm]
+\tikzstyle{level 2} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 3} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 4} = [level distance=1cm, sibling distance=1cm]
+\begin{tikzpicture}[grow=right]
+	\node[c] {}
+	child {
+		node[c] {}
+		child {
+			node[e] {}
+			child {
+				node[c] {}
+				child {
+					node[c] {}
+					child {
+						node[c] {}
+						child {
+							node[c] {}
+							child {
+								node[e] {}
+								edge from parent
+								node[a] {$b$}
+							}
+							edge from parent
+							node[a] {$a$}
+						}
+						edge from parent
+						node[a] {$b$}
+					}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$a$}
+			}
+			child {
+				node[c] {}
+				child {
+					node[c] {}
+					child {
+						node[e] {}
+						edge from parent
+						node[a] {$b$}
+					}
+					edge from parent
+					node[a] {$a$}
+				}
+				edge from parent
+				node[a] {$b$}
+			}
+			edge from parent
+			node[a] {$b$}
+		}
+		edge from parent
+		node[a] {$a$}
+	}
+	child {
+		node[e] {}
+		child {
+			node[c] {}
+			child {
+				node[e] {}
+				child {
+					node[c] {}
+					child {
+						node[c] {}
+						child {
+							node[e] {}
+							edge from parent
+							node[a] {$b$}
+						}
+						edge from parent
+						node[a] {$a$}
+					}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$b$}
+			}
+			edge from parent
+			node[a] {$a$}
+		}
+		child {
+			node[c] {}
+			child {
+				node[c] {}
+				child {
+					node[e] {}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$a$}
+			}
+			edge from parent
+			node[a] {$b$}
+		}
+		edge from parent
+		node[a] {$b$}
+	};
+\end{tikzpicture}
+
+
+\section{Suffix tree}
+
+For $T=ababbab$ construct Suffix Tree.
+
+\tikzstyle{a} = [above]
+\tikzstyle{c} = [circle, draw, minimum width=0.4cm]
+\tikzstyle{e} = [circle, draw, minimum width=0.4cm, accepting]
+\tikzstyle{level 1} = [level distance=1cm, sibling distance=2cm]
+\tikzstyle{level 2} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 3} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 4} = [level distance=1cm, sibling distance=1cm]
+\begin{tikzpicture}[grow=right]
+	\node[c] {}
+	child {
+		node[e] {}
+		child {
+			node[e] {}
+			edge from parent
+			node[above right] {$abbab$}
+		}
+		child {
+			node[e] {}
+			edge from parent
+			node[a] {$bab$}
+		}
+		edge from parent
+		node[above right] {$ab$}
+	}
+	child {
+		node[e] {}
+		child {
+			node[e] {}
+			child {
+				node[e] {}
+				edge from parent
+				node[a] {$bab$}
+			}
+			edge from parent
+			node[above right] {$ab$}
+		}
+		child {
+			node[e] {}
+			edge from parent
+			node[a] {$bab$}
+		}
+		edge from parent
+		node[a] {$b$}
+	};
+\end{tikzpicture}
+
+\section{Suffix automaton}
+
+For $T=ababbab$ construct Suffix Automaton.
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto]
+	\tikzstyle{every state} = [circle,draw,minimum size=0.4cm]
+	\node[initial,state]	(a)					{};
+	\node[state]			(b) [right of=a]	{};
+	\node[state,accepting]	(c) [right of=b]	{};
+	\node[state]			(d) [right of=c]	{};
+	\node[state]			(e) [right of=d]	{};
+	\node[state]			(f) [right of=e]	{};
+	\node[state]			(g) [right of=f]	{};
+	\node[state,accepting]	(h) [right of=g]	{};
+	\node[state,accepting]			(i) [below of=c]	{};
+	\node[state]			(j) [below of=d]	{};
+	\node[state,accepting]	(k) [below of=e]	{};
+	\path	(a) edge node {$a$} (b)
+				edge [below] node {$b$} (i)
+			(b) edge node {$b$} (c)
+			(c) edge node {$a$} (d)
+				edge [bend left] node {$b$} (f)
+			(d) edge node {$b$} (e)
+			(e) edge node {$b$} (f)
+			(f) edge node {$a$} (g)
+			(g) edge node {$b$} (h)
+			(i) edge [below] node {$b$} (f)
+				edge [below] node {$a$} (j)
+			(j) edge [below] node {$b$} (k)
+			(k) edge [below] node {$b$} (h);
+\end{tikzpicture}
+
+\section{Compressed Suffix automaton}
+
+For $T=ababbab$ construct Compressed Suffix Automaton.
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto]
+	\tikzstyle{every state} = [circle,draw,minimum size=0.4cm]
+	\node[initial,state]	(a)					{};
+	\node[state,accepting]	(c) [right of=b]	{};
+	\node[state]			(f) [right of=e]	{};
+	\node[state,accepting]	(h) [right of=g]	{};
+	\node[state,accepting]			(i) [below of=c]	{};
+	\node[state,accepting]	(k) [below of=e]	{};
+	\path	(a) edge node {$ab$} (c)
+				edge node {$b$} (i)
+			(c) edge node {$abb$} (f)
+				edge [bend left] node {$b$} (f)
+			(f) edge node {$ab$} (h)
+			(i) edge node {$b$} (f)
+				edge node {$ab$} (k)
+			(k) edge node {$b$} (h);
+\end{tikzpicture}
+
+\clearpage
+\section{Suffix Automaton Construction from Suffix Trie}
+
+For $T=ababbab$ construct Suffix Automaton from its Suffix Trie.
+
+States of Suffix Trie are labeled as if it was an automaton.
+
+\tikzstyle{a} = [above]
+\tikzstyle{c} = [circle, draw, minimum width=0.4cm]
+\tikzstyle{e} = [circle, draw, minimum width=0.4cm, accepting]
+\tikzstyle{level 1} = [level distance=1cm, sibling distance=2cm]
+\tikzstyle{level 2} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 3} = [level distance=1cm, sibling distance=1cm]
+\tikzstyle{level 4} = [level distance=1cm, sibling distance=1cm]
+\begin{tikzpicture}[grow=right]
+	\node[c] {$0$}
+	child {
+		node[c] {$10$}
+		child {
+			node[e] {$11$}
+			child {
+				node[c] {$15$}
+				child {
+					node[c] {$16$}
+					child {
+						node[c] {$17$}
+						child {
+							node[c] {$18$}
+							child {
+								node[e] {$19$}
+								edge from parent
+								node[a] {$b$}
+							}
+							edge from parent
+							node[a] {$a$}
+						}
+						edge from parent
+						node[a] {$b$}
+					}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$a$}
+			}
+			child {
+				node[c] {$12$}
+				child {
+					node[c] {$13$}
+					child {
+						node[e] {$14$}
+						edge from parent
+						node[a] {$b$}
+					}
+					edge from parent
+					node[a] {$a$}
+				}
+				edge from parent
+				node[a] {$b$}
+			}
+			edge from parent
+			node[a] {$b$}
+		}
+		edge from parent
+		node[a] {$a$}
+	}
+	child {
+		node[e] {$1$}
+		child {
+			node[c] {$5$}
+			child {
+				node[e] {$6$}
+				child {
+					node[c] {$7$}
+					child {
+						node[c] {$8$}
+						child {
+							node[e] {$9$}
+							edge from parent
+							node[a] {$b$}
+						}
+						edge from parent
+						node[a] {$a$}
+					}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$b$}
+			}
+			edge from parent
+			node[a] {$a$}
+		}
+		child {
+			node[c] {$2$}
+			child {
+				node[c] {$3$}
+				child {
+					node[e] {$4$}
+					edge from parent
+					node[a] {$b$}
+				}
+				edge from parent
+				node[a] {$a$}
+			}
+			edge from parent
+			node[a] {$b$}
+		}
+		edge from parent
+		node[a] {$b$}
+	};
+\end{tikzpicture}
+
+Transition function is iteratively analyzed. In each iteration the states are put into groups based on their similarity. In the initial interation $g_0$ states are split into two groups: final states and non-final states. The groups are labeled by a first state in the group for convenience. In following in iterations $g_i, i \geq 1$ states are split into groups based on the previsous group and groups to which transions for all symbols of the alphabet lead.
+
+\begin{table}[h]
+  \footnotesize
+	\begin{tabular}{|c||c|c||c||c|c||c||c|c||c||c|c||c||c|c||c||}
+		\hline
+		$\delta$ & a & b & $g_0$ & a & b & $g_1$ & a & b & $g_2$ & a & b & $g_3$ & a & b & $g_4$\\ \hline
+		0  & 10 & 1  & 0 & 0 & 1 & 0 & 0 & 1 & 0  & 0  & 1  & 0 & 0  & 1  & 0 \\ 
+		1  & 5  & 2  & 1 & 0 & 0 & 1 & 0 & 2 & 1  & 0  & 2  & 1 & 0  & 2  & 1 \\
+		2  & 3  & -  & 0 & 0 & 0 & 2 & 0 & 2 & 2  & 0  & -  & 2 & 0  & -  & 2 \\
+		3  & -  & 4  & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 4  & 3 & -  & 4  & 3 \\
+		4  & -  & -  & 1 & 0 & 0 & 1 & 2 & 2 & 4  & -  & -  & 4 & -  & -  & 4 \\
+		5  & -  & 6  & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 1  & 5 & -  & 1  & 5 \\
+		6  & -  & 7  & 1 & 0 & 0 & 1 & 2 & 2 & 1  & -  & 2  & 6 & -  & 2  & 6 \\
+		7  & 8  & -  & 0 & 0 & 0 & 2 & 0 & 2 & 2  & 0  & -  & 2 & 0  & -  & 2 \\
+		8  & -  & 9  & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 4  & 3 & -  & 4  & 3 \\
+		9  & -  & -  & 1 & 0 & 0 & 1 & 2 & 2 & 4  & -  & -  & 4 & -  & -  & 4 \\
+		10 & -  & 11 & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 11 & 10& -  & 11 & 10 \\
+		11 & 15 & 12 & 1 & 0 & 0 & 1 & 2 & 2 & 11 & 15 & 2  & 11& 15 & 2  & 11\\
+		12 & 13 & -  & 0 & 0 & 0 & 2 & 0 & 2 & 2  & 0  & -  & 2 & 3  & -  & 2 \\
+		13 & -  & 14 & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 4  & 3 & -  & 4  & 3 \\
+		14 & -  & -  & 1 & 0 & 0 & 1 & 2 & 2 & 4  & -  & -  & 4 & -  & -  & 4 \\
+		15 & -  & 16 & 0 & 0 & 0 & 2 & 2 & 2 & 15 & -  & 2  & 15& -  & 2  & 15\\
+		16 & -  & 17 & 0 & 0 & 0 & 2 & 2 & 2 & 15 & -  & 15 & 16& -  & 15 & 16\\
+		17 & 18 & -  & 0 & 0 & 0 & 2 & 0 & 2 & 2  & 0  & -  & 2 & 3  & -  & 2 \\
+		18 & -  & 19 & 0 & 0 & 1 & 0 & 2 & 1 & 0  & -  & 4  & 3 & -  & 4  & 3 \\
+		19 & -  & -  & 1 & 0 & 0 & 1 & 2 & 2 & 4  & -  & -  & 4 & -  & -  & 4 \\
+		-  & -  & -  & 0 & 0 & 0 & 2 & 2 & 2 & -  & -  & -  & - & -  & -  & - \\
+		\hline
+	\end{tabular} 
+	\caption{Minimization of Suffix Trie for string $T=ababbab$.}
+\end{table}
+
+The algorithm ends when either each state is in its own group -- the automaton in already minimal or if two consecutive iterations $g_i$ and $g_{i+1}$ split the states the same way.
+
+States which end up in the same group are equivalent:
+\begin{itemize}
+	\item $2 \Leftrightarrow 7 \Leftrightarrow 12 \Leftrightarrow 17$,
+	\item $3 \Leftrightarrow 8 \Leftrightarrow 13 \Leftrightarrow 18$,
+	\item $4 \Leftrightarrow 9 \Leftrightarrow 14 \Leftrightarrow 19$.
+\end{itemize}
+
+The equivalent states can be merged together and minimal automaton can be constructed.
+
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto]
+	\tikzstyle{every state} = [circle,draw,minimum size=0.4cm]
+	\node[initial,state]	(a)					{$0$};
+	\node[state]			(b) [right of=a]	{$10$};
+	\node[state,accepting]	(c) [right of=b]	{$11$};
+	\node[state]			(d) [right of=c]	{$15$};
+	\node[state]			(e) [right of=d]	{$16$};
+	\node[state]			(f) [right of=e]	{$2$};
+	\node[state]			(g) [right of=f]	{$3$};
+	\node[state,accepting]	(h) [right of=g]	{$4$};
+	\node[state,accepting]			(i) [below of=c]	{$1$};
+	\node[state]			(j) [below of=d]	{$5$};
+	\node[state,accepting]	(k) [below of=e]	{$6$};
+	\path	(a) edge node {$a$} (b)
+				edge [below] node {$b$} (i)
+			(b) edge node {$b$} (c)
+			(c) edge node {$a$} (d)
+				edge [bend left] node {$b$} (f)
+			(d) edge node {$b$} (e)
+			(e) edge node {$b$} (f)
+			(f) edge node {$a$} (g)
+			(g) edge node {$b$} (h)
+			(i) edge [below] node {$b$} (f)
+				edge [below] node {$a$} (j)
+			(j) edge [below] node {$b$} (k)
+			(k) edge [below] node {$b$} (h);
+\end{tikzpicture}
